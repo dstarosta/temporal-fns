@@ -2,6 +2,9 @@
 // Date constructor, and falls through to the constructor for anything else
 // (which yields an Invalid Date rather than throwing, matching native Date
 // behavior for unsupported input).
+
+import { plainDateTimeToDate } from './helpers/convert.js';
+
 /**
  * @summary Convert the given argument to an instance of `Date`.
  *
@@ -9,6 +12,12 @@
  * Convert the given argument to an instance of `Date`.
  *
  * If the argument is an instance of `Date`, the function returns its clone.
+ *
+ * If the argument is a `Temporal.PlainDate` or `Temporal.PlainDateTime`, its wall-clock fields
+ * (with midnight assumed for `PlainDate`) are read as local time, matching this library's other
+ * `Date`-producing conversions. If the argument is a `Temporal.ZonedDateTime`, the returned `Date`
+ * represents the same instant (`argument.epochMilliseconds`), not its wall-clock fields
+ * reinterpreted as local time.
  *
  * If the argument is a number or string, it is passed directly to the `Date` constructor (a
  * number is treated as a timestamp).
@@ -18,7 +27,7 @@
  *
  * @param argument - The value to convert
  *
- * @returns The parsed date in the local time zone
+ * @returns The converted date
  *
  * @example
  * // Clone the date:
@@ -33,6 +42,12 @@
 export function toDate(argument: unknown): Date {
   if (argument instanceof Date) {
     return new Date(argument);
+  } else if (argument instanceof Temporal.PlainDate) {
+    return plainDateTimeToDate(argument.toPlainDateTime());
+  } else if (argument instanceof Temporal.PlainDateTime) {
+    return plainDateTimeToDate(argument);
+  } else if (argument instanceof Temporal.ZonedDateTime) {
+    return new Date(argument.epochMilliseconds);
   }
   return new Date(argument as ConstructorParameters<typeof Date>[0]);
 }

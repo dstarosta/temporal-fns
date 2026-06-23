@@ -2,20 +2,26 @@ import { isDate } from './is-date.js';
 import { toDate } from './to-date.js';
 import { type DateLike } from './types.js';
 
-// Temporal values can never represent an "Invalid Date" sentinel the way
-// JS Date can (Temporal.PlainDate.from('garbage') throws at construction
-// time instead) — this overload exists purely for API symmetry and always
-// returns true.
+/**
+ * @summary Is the given date valid?
+ *
+ * @description
+ * Always returns `true`: `Temporal.PlainDate`/`Temporal.PlainDateTime`/`Temporal.ZonedDateTime`
+ * values can never represent an "Invalid Date" sentinel the way `Date` can — constructing one
+ * from invalid input throws instead. This overload exists purely for API symmetry with the
+ * general overload below.
+ *
+ * @param date - The date to check
+ *
+ * @returns `true`
+ */
+export function isValid(date: DateLike): true;
 /**
  * @summary Is the given date valid?
  *
  * @description
  * Returns false if argument is Invalid Date and true otherwise. Argument is converted to `Date`
  * using {@link toDate}. Invalid Date is a `Date`, whose time value is `NaN`.
- *
- * `Temporal.PlainDate`/`Temporal.PlainDateTime`/`Temporal.ZonedDateTime` values always return
- * `true`, since Temporal has no "Invalid Date" sentinel — constructing one from invalid input
- * throws instead.
  *
  * @param date - The date to check
  *
@@ -37,7 +43,6 @@ import { type DateLike } from './types.js';
  * //=> false
  */
 export function isValid(date: unknown): boolean;
-export function isValid(date: DateLike): true;
 export function isValid(date: unknown): boolean {
   if (
     date instanceof Temporal.PlainDate ||

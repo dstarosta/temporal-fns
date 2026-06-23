@@ -1,1 +1,1 @@
-function e(e){return e instanceof Date,new Date(e)}export{e as toDate};
+import{plainDateTimeToDate as e}from"./helpers/convert.js";function t(t){return t instanceof Date?new Date(t):t instanceof Temporal.PlainDate?e(t.toPlainDateTime()):t instanceof Temporal.PlainDateTime?e(t):t instanceof Temporal.ZonedDateTime?new Date(t.epochMilliseconds):new Date(t)}export{t as toDate};

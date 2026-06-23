@@ -19,6 +19,7 @@ import {
   warnOrThrowProtectedParseToken,
 } from './helpers/parse/tokenize.js';
 import { tokenSpecs, type TokenParseContext } from './helpers/parse/token-specs.js';
+import { type DateLike } from './types.js';
 
 /**
  * The {@link parse} function options.
@@ -163,7 +164,7 @@ function buildContext(options: ParseOptions | undefined): TokenParseContext {
   };
 }
 
-function seedFields(referenceDate: Date): WorkingFields {
+function seedFields(referenceDate: Date | DateLike): WorkingFields {
   const fields = getDateTimeFields(referenceDate);
   return { ...fields, offsetMinutes: undefined, epochMilliseconds: undefined };
 }
@@ -212,7 +213,7 @@ function seedFields(referenceDate: Date): WorkingFields {
 export function parse(
   dateStr: string,
   formatStr: string,
-  referenceDate: Date,
+  referenceDate: Date | DateLike,
   options?: ParseOptions
 ): Date;
 /**
@@ -242,7 +243,7 @@ export function parse(
 export function parse(
   dateStr: string,
   formatStr: string,
-  referenceDate: Date,
+  referenceDate: Date | DateLike,
   options: ParseTemporalOptions<Temporal.PlainDate>
 ): Temporal.PlainDate | undefined;
 /**
@@ -271,7 +272,7 @@ export function parse(
 export function parse(
   dateStr: string,
   formatStr: string,
-  referenceDate: Date,
+  referenceDate: Date | DateLike,
   options: ParseTemporalOptions<Temporal.PlainDateTime>
 ): Temporal.PlainDateTime | undefined;
 /**
@@ -302,20 +303,20 @@ export function parse(
 export function parse(
   dateStr: string,
   formatStr: string,
-  referenceDate: Date,
+  referenceDate: Date | DateLike,
   options: ParseZonedDateTimeOptions
 ): Temporal.ZonedDateTime | undefined;
 export function parse(
   dateStr: string,
   formatStr: string,
-  referenceDate: Date,
+  referenceDate: Date | DateLike,
   options?: ParseAnyOptions
 ): Date | Temporal.PlainDate | Temporal.PlainDateTime | Temporal.ZonedDateTime | undefined {
   const context = buildContext(options);
   const seed = seedFields(referenceDate);
 
   if (!options || !('in' in options)) {
-    if (Number.isNaN(referenceDate.getTime())) {
+    if (referenceDate instanceof Date && Number.isNaN(referenceDate.getTime())) {
       return new Date(Number.NaN);
     }
     const resolved = parseCore(dateStr, formatStr, seed, context, options ?? {});

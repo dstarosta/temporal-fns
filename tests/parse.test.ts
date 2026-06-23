@@ -395,6 +395,53 @@ describe('parse: ZonedDateTime overload', () => {
   });
 });
 
+describe('parse: DateLike referenceDate (decoupled from the output type)', () => {
+  // 'mm' (minute) is chosen over a day/month/year token deliberately: parsing only a `dd`/`MM`/
+  // `yyyy` token zeroes time-of-day per date-fns' own (verified) behavior - using a time token
+  // instead demonstrates referenceDate's other fields (year/month/day) really do carry through.
+  it('fills missing fields from a PlainDate referenceDate, output as Date', () => {
+    const result = parse('45', 'mm', Temporal.PlainDate.from('2014-02-11'));
+    expect(+result).toBe(+new Date(2014, 1, 11, 0, 45));
+  });
+
+  it('fills missing fields from a PlainDateTime referenceDate, output as Date', () => {
+    const result = parse('45', 'mm', Temporal.PlainDateTime.from('2014-02-11T10:30:00'));
+    expect(+result).toBe(+new Date(2014, 1, 11, 10, 45));
+  });
+
+  it('fills missing fields from a ZonedDateTime referenceDate, output as Date', () => {
+    const result = parse(
+      '45',
+      'mm',
+      Temporal.ZonedDateTime.from('2014-02-11T10:30:00-05:00[America/New_York]')
+    );
+    expect(+result).toBe(+new Date(2014, 1, 11, 10, 45));
+  });
+
+  it('fills missing fields from a Date referenceDate, output as PlainDate', () => {
+    const result = parse('11', 'dd', new Date(2014, 1, 1), { in: Temporal.PlainDate });
+    expect(result?.toString()).toBe('2014-02-11');
+  });
+
+  it('fills missing fields from a ZonedDateTime referenceDate, output as PlainDateTime', () => {
+    const result = parse(
+      '45',
+      'mm',
+      Temporal.ZonedDateTime.from('2014-02-11T10:30:00-05:00[America/New_York]'),
+      { in: Temporal.PlainDateTime }
+    );
+    expect(result?.toString()).toBe('2014-02-11T10:45:00');
+  });
+
+  it('fills missing fields from a PlainDate referenceDate, output as ZonedDateTime', () => {
+    const result = parse('11', 'dd', Temporal.PlainDate.from('2014-02-01'), {
+      in: Temporal.ZonedDateTime,
+      timeZone: 'America/New_York',
+    });
+    expect(result?.toString()).toBe('2014-02-11T00:00:00-05:00[America/New_York]');
+  });
+});
+
 describe('parse: locale text matching', () => {
   it('matches month and weekday names case-sensitively in en-US', () => {
     const result = parse('Tuesday, February 11 2014', 'EEEE, MMMM dd yyyy', new Date());
