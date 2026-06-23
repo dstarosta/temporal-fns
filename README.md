@@ -1,6 +1,6 @@
 # temporal-fns
 
-A [`date-fns`](https://github.com/date-fns/date-fns) compatible API built on the native [`Temporal`](https://tc39.es/proposal-temporal/docs/) object.
+A [`date-fns`](https://github.com/date-fns/date-fns) compatible API built on the native [`Temporal`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Temporal) object.
 
 ## Requirements
 
