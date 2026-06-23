@@ -1,0 +1,1 @@
+import{getISOWeekYearValue as e}from"./helpers/iso-week.js";import{setISOWeekYearValue as t}from"./set-iso-week-year.js";function n(n,r){return t(n,e(n)+r)}function r(e,t){return n(e,t)}export{r as addISOWeekYears,n as addISOWeekYearsValue};

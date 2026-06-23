@@ -1,0 +1,1 @@
+import{dateToPlainDateTime as e}from"./helpers/convert.js";function t(t){let n=t instanceof Date?e(t).month:t.month;return Math.trunc((n-1)/3)+1}function n(e){return t(e)}export{n as getQuarter,t as getQuarterValue};

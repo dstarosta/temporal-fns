@@ -1,0 +1,1 @@
+import{isDate as e}from"./is-date.js";import{toDate as t}from"./to-date.js";function n(n){return n instanceof Temporal.PlainDate||n instanceof Temporal.PlainDateTime||n instanceof Temporal.ZonedDateTime?!0:!(!e(n)&&typeof n!=`number`||Number.isNaN(+t(n)))}export{n as isValid};

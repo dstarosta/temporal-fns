@@ -1,0 +1,1 @@
+function e(){return Temporal.Now.plainDateTimeISO(`UTC`)}export{e as todayPlainDateTime};

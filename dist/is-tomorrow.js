@@ -1,0 +1,1 @@
+import{addDaysValue as e}from"./add-days.js";import{constructNowValue as t}from"./construct-now.js";import{isSameDayValue as n}from"./is-same-day.js";function r(r){return n(r,e(t(r),1))}export{r as isTomorrow};

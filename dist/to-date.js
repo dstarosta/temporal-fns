@@ -1,0 +1,1 @@
+function e(e){return e instanceof Date,new Date(e)}export{e as toDate};

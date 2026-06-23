@@ -1,0 +1,1 @@
+import{formatDistance as e}from"../format-distance.js";import{convertToFP as t}from"./helpers/convert-to-fp.js";const n=t(e,3);export{n as formatDistanceWithOptions};

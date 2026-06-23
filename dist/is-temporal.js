@@ -1,0 +1,1 @@
+import{isPlainDate as e}from"./is-plain-date.js";import{isPlainDateTime as t}from"./is-plain-date-time.js";import{isZonedDateTime as n}from"./is-zoned-date-time.js";function r(r){return e(r)||t(r)||n(r)}export{r as isTemporal};

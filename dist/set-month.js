@@ -1,0 +1,1 @@
+import{withDate as e}from"./helpers/convert.js";function t(t,n){return t instanceof Date?e(t,e=>e.with({month:n+1})):t.with({month:n+1})}export{t as setMonth};

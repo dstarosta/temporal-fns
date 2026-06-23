@@ -1,0 +1,1 @@
+import{isEqual as e}from"../is-equal.js";import{convertToFP as t}from"./helpers/convert-to-fp.js";const n=t(e,2);export{n as isEqual};

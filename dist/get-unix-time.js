@@ -1,0 +1,1 @@
+import{toEpochMilliseconds as e}from"./helpers/to-epoch-milliseconds.js";function t(t){return Math.trunc(e(t)/1e3)}export{t as getUnixTime};

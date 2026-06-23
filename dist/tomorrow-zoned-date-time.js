@@ -1,0 +1,1 @@
+import{addDays as e}from"./add-days.js";import{todayZonedDateTime as t}from"./today-zoned-date-time.js";function n(n){return e(t(n),1)}export{n as tomorrowZonedDateTime};

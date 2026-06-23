@@ -1,0 +1,1 @@
+function e(){return Temporal.Now.timeZoneId()}export{e as getTimezoneId};

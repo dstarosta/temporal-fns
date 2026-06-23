@@ -1,0 +1,1 @@
+import{toPlainDate as e}from"../to-plain-date.js";import{convertToFP as t}from"./helpers/convert-to-fp.js";const n=t(e,1);export{n as toPlainDate};

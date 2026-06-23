@@ -1,0 +1,1 @@
+import{withDate as e}from"./helpers/convert.js";import{zeroTime as t}from"./helpers/zero-time.js";import{quarterStartMonth as n}from"./helpers/quarter.js";function r(r){return r instanceof Date?e(r,e=>t(e.with({month:n(e.month),day:1}))):t(r.with({month:n(r.month),day:1}))}function i(e){return r(e)}export{i as startOfQuarter,r as startOfQuarterValue};

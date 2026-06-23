@@ -1,0 +1,1 @@
+import{startOfWeek as e}from"../start-of-week.js";import{convertToFP as t}from"./helpers/convert-to-fp.js";const n=t(e,2);export{n as startOfWeekWithOptions};

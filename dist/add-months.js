@@ -1,0 +1,1 @@
+import{createAddDateUnit as e}from"./helpers/create-add-unit.js";const t=e(`months`);export{t as addMonths};

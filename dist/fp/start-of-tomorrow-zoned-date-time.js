@@ -1,0 +1,1 @@
+import{startOfTomorrowZonedDateTime as e}from"../start-of-tomorrow-zoned-date-time.js";import{convertToFP as t}from"./helpers/convert-to-fp.js";const n=t(e,1);export{n as startOfTomorrowZonedDateTime};

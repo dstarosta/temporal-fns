@@ -1,0 +1,1 @@
+import{isFriday as e}from"../is-friday.js";import{convertToFP as t}from"./helpers/convert-to-fp.js";const n=t(e,1);export{n as isFriday};

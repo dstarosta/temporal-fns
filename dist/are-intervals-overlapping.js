@@ -1,0 +1,1 @@
+import{compare as e}from"./helpers/compare.js";function t(t,n,r){let[i,a]=e(t.start,t.end)<=0?[t.start,t.end]:[t.end,t.start],[o,s]=e(n.start,n.end)<=0?[n.start,n.end]:[n.end,n.start];return r?.inclusive?e(i,s)<=0&&e(o,a)<=0:e(i,s)<0&&e(o,a)<0}export{t as areIntervalsOverlapping};

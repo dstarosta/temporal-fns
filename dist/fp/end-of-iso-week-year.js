@@ -1,0 +1,1 @@
+import{endOfISOWeekYear as e}from"../end-of-iso-week-year.js";import{convertToFP as t}from"./helpers/convert-to-fp.js";const n=t(e,1);export{n as endOfISOWeekYear};

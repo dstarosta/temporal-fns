@@ -1,0 +1,1 @@
+import{compare as e}from"./helpers/compare.js";import{startOfQuarterValue as t}from"./start-of-quarter.js";function n(n,r){return e(t(n),t(r))===0}function r(e,t){return n(e,t)}export{r as isSameQuarter,n as isSameQuarterValue};

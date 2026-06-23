@@ -1,0 +1,1 @@
+import{dateToPlainDateTime as e}from"./helpers/convert.js";function t(t,n){return t instanceof Date?e(t).toZonedDateTime(n):t instanceof Temporal.ZonedDateTime?t.withTimeZone(n):(t instanceof Temporal.PlainDate,t.toZonedDateTime(n))}export{t as toZonedDateTime};

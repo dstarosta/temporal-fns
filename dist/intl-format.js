@@ -1,0 +1,1 @@
+function e(e){return e!==void 0&&!(`locale`in e)}function t(t,n,r){let i,a;return e(n)?(i=n,a=r?.locale):a=n?.locale,t instanceof Date?new Intl.DateTimeFormat(a,i).format(t):t.toLocaleString(a,i)}export{t as intlFormat};

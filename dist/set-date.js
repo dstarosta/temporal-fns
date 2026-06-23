@@ -1,0 +1,1 @@
+import{withDate as e}from"./helpers/convert.js";function t(e,t){return e.with({day:1}).add({days:t-1})}function n(n,r){return n instanceof Date?e(n,e=>t(e,r)):t(n,r)}export{n as setDate,t as setDateValue};

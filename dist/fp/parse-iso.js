@@ -1,0 +1,1 @@
+import{parseISO as e}from"../parse-iso.js";const t=t=>e(t);export{t as parseISO};

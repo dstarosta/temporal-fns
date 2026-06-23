@@ -1,0 +1,1 @@
+import{addQuarters as e}from"./add-quarters.js";function t(t,n){return t instanceof Date,e(t,-n)}export{t as subQuarters};

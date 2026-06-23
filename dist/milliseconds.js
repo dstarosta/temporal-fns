@@ -1,0 +1,1 @@
+const e=365.2425;function t(t){let n=0;t.years&&(n+=t.years*e),t.months&&(n+=t.months*(e/12)),t.weeks&&(n+=t.weeks*7),t.days&&(n+=t.days);let r=n*24*60*60;return t.hours&&(r+=t.hours*60*60),t.minutes&&(r+=t.minutes*60),t.seconds&&(r+=t.seconds),Math.trunc(r*1e3)}export{t as milliseconds};

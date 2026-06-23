@@ -1,0 +1,1 @@
+import{withDate as e}from"./helpers/convert.js";import{zeroTime as t}from"./helpers/zero-time.js";import{decadeStartYear as n}from"./helpers/decade.js";function r(r){return r instanceof Date?e(r,e=>t(e.with({year:n(e.year),month:1,day:1}))):t(r.with({year:n(r.year),month:1,day:1}))}export{r as startOfDecade};

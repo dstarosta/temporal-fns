@@ -1,0 +1,1 @@
+import{getWeekYearValue as e}from"./helpers/local-week.js";function t(t,n){return e(t,n)}export{t as getWeekYear};

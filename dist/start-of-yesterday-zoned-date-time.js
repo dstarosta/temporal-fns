@@ -1,0 +1,1 @@
+import{yesterdayZonedDateTime as e}from"./yesterday-zoned-date-time.js";import{startOfDay as t}from"./start-of-day.js";function n(n){return t(e(n))}export{n as startOfYesterdayZonedDateTime};

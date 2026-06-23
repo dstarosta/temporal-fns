@@ -1,0 +1,1 @@
+import{assertSameType as e}from"./helpers/assert-same-type.js";function t(t,n){if(t instanceof Date&&n instanceof Date)return t.getFullYear()===n.getFullYear()&&t.getMonth()===n.getMonth()&&t.getDate()===n.getDate();e(t,n);let r=t,i=n;return r.year===i.year&&r.month===i.month&&r.day===i.day}function n(e,n){return t(e,n)}export{n as isSameDay,t as isSameDayValue};

@@ -1,0 +1,1 @@
+import{dateToPlainDateTime as e}from"./helpers/convert.js";import{getQuarterValue as t}from"./get-quarter.js";function n(t){return t instanceof Date?e(t).year:t.year}function r(e,r){let i=n(e)-n(r),a=t(e)-t(r);return i*4+a}function i(e,t){return r(e,t)}export{i as differenceInCalendarQuarters,r as differenceInCalendarQuartersValue};

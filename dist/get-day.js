@@ -1,0 +1,1 @@
+import{getDayValue as e}from"./helpers/week.js";function t(t){return e(t)}export{t as getDay};

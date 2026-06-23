@@ -1,0 +1,1 @@
+import{endOfQuarter as e}from"../end-of-quarter.js";import{convertToFP as t}from"./helpers/convert-to-fp.js";const n=t(e,1);export{n as endOfQuarter};

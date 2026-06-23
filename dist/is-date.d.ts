@@ -1,0 +1,36 @@
+//#region src/is-date.d.ts
+/**
+ * @summary Is the given value a date?
+ *
+ * @description
+ * Returns true if the given value is an instance of `Date`. The function works for dates
+ * transferred across iframes.
+ *
+ * @param value - The value to check
+ *
+ * @returns True if the given value is a date
+ *
+ * @example
+ * // For a valid date:
+ * const result = isDate(new Date())
+ * //=> true
+ *
+ * @example
+ * // For an invalid date:
+ * const result = isDate(new Date(NaN))
+ * //=> true
+ *
+ * @example
+ * // For some value:
+ * const result = isDate('2014-02-31')
+ * //=> false
+ *
+ * @example
+ * // For an object:
+ * const result = isDate({})
+ * //=> false
+ */
+declare function isDate(value: unknown): value is Date;
+//#endregion
+export { isDate };
+//# sourceMappingURL=is-date.d.ts.map

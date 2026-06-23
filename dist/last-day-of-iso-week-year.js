@@ -1,0 +1,1 @@
+import{startOfISOWeek as e}from"./start-of-iso-week.js";import{getISOWeekYearValue as t}from"./helpers/iso-week.js";import{plainDateResultAs as n}from"./helpers/plain-date-result.js";function r(r){let i=t(r);return n(e(Temporal.PlainDate.from({year:i+1,month:1,day:4})).subtract({days:1}),r)}export{r as lastDayOfISOWeekYear};

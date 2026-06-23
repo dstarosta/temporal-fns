@@ -1,0 +1,1 @@
+import{constructNowValue as e}from"./construct-now.js";import{isSameDayValue as t}from"./is-same-day.js";function n(n){return t(n,e(n))}export{n as isToday};

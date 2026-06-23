@@ -1,0 +1,1 @@
+import{compare as e}from"./helpers/compare.js";function t(t,n,r){if(r?.assertPositive&&e(t,n)>0)throw TypeError(`End date must be after start date`);return{start:t,end:n}}export{t as interval};

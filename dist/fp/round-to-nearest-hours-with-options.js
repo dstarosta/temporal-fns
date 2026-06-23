@@ -1,0 +1,1 @@
+import{roundToNearestHours as e}from"../round-to-nearest-hours.js";import{convertToFP as t}from"./helpers/convert-to-fp.js";const n=t(e,2);export{n as roundToNearestHoursWithOptions};

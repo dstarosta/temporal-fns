@@ -1,0 +1,1 @@
+import{formatRFC3339 as e}from"../format-rfc3339.js";import{convertToFP as t}from"./helpers/convert-to-fp.js";const n=t(e,2);export{n as formatRFC3339WithOptions};

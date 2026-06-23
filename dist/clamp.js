@@ -1,0 +1,1 @@
+import{maxValue as e}from"./max.js";import{minValue as t}from"./min.js";function n(n,r){return t([e([n,r.start]),r.end])}export{n as clamp};

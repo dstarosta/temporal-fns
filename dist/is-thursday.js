@@ -1,0 +1,1 @@
+import{createIsDayOfWeek as e}from"./helpers/is-day-of-week.js";const t=e(4);export{t as isThursday};

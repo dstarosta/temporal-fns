@@ -1,0 +1,1 @@
+import{startOfWeek as e}from"./start-of-week.js";function t(t){return t instanceof Date,e(t,{weekStartsOn:1})}export{t as startOfISOWeek};

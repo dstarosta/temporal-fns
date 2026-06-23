@@ -1,0 +1,1 @@
+import{withDate as e}from"./helpers/convert.js";function t(t,n){return t instanceof Date?e(t,e=>e.with({millisecond:n})):t.with({millisecond:n})}export{t as setMilliseconds};

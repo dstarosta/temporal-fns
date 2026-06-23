@@ -1,0 +1,1 @@
+import{hoursToMinutes as e}from"../hours-to-minutes.js";import{convertToFP as t}from"./helpers/convert-to-fp.js";const n=t(e,1);export{n as hoursToMinutes};

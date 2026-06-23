@@ -1,0 +1,1 @@
+import{createAddTimeUnit as e}from"./helpers/create-add-unit.js";const t=e(`seconds`);export{t as addSeconds};

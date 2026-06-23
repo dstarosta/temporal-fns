@@ -1,0 +1,1 @@
+import{parseJSON as e}from"../parse-json.js";const t=t=>e(t);export{t as parseJSON};

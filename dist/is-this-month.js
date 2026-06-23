@@ -1,0 +1,1 @@
+import{constructNowValue as e}from"./construct-now.js";import{isSameMonthValue as t}from"./is-same-month.js";function n(n){return t(n,e(n))}export{n as isThisMonth};

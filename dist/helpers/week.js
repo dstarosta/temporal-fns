@@ -1,0 +1,1 @@
+import{dateToPlainDateTime as e}from"./convert.js";function t(e){return e%7}function n(n){return t(n instanceof Date?e(n).dayOfWeek:n.dayOfWeek)}export{n as getDayValue,t as isoDayOfWeekToSundayBased};

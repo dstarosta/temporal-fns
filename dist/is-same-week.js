@@ -1,0 +1,1 @@
+import{startOfWeekValue as e}from"./start-of-week.js";import{compare as t}from"./helpers/compare.js";function n(n,r,i){return t(e(n,i),e(r,i))===0}function r(e,t,r){return n(e,t,r)}export{r as isSameWeek,n as isSameWeekValue};

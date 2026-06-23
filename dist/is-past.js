@@ -1,0 +1,1 @@
+import{compare as e}from"./helpers/compare.js";import{constructNowValue as t}from"./construct-now.js";function n(n){return e(n,t(n))<0}export{n as isPast};

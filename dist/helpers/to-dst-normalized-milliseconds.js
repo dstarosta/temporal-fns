@@ -1,0 +1,1 @@
+function e(e){return e instanceof Date?Date.UTC(e.getFullYear(),e.getMonth(),e.getDate(),e.getHours(),e.getMinutes(),e.getSeconds(),e.getMilliseconds()):e instanceof Temporal.ZonedDateTime||e instanceof Temporal.PlainDateTime?Date.UTC(e.year,e.month-1,e.day,e.hour,e.minute,e.second,e.millisecond):Date.UTC(e.year,e.month-1,e.day)}export{e as toDstNormalizedMilliseconds};

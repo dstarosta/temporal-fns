@@ -1,0 +1,1 @@
+function e(e,t=Temporal.Now.timeZoneId()){return Temporal.Instant.fromEpochMilliseconds(e*1e3).toZonedDateTimeISO(t)}export{e as fromUnixTimeZonedDateTime};

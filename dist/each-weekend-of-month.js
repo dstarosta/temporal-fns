@@ -1,0 +1,1 @@
+import{startOfMonth as e}from"./start-of-month.js";import{eachWeekendOfInterval as t}from"./each-weekend-of-interval.js";import{endOfMonth as n}from"./end-of-month.js";function r(r){return r instanceof Date,t({start:e(r),end:n(r)})}export{r as eachWeekendOfMonth};

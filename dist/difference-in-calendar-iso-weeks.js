@@ -1,0 +1,1 @@
+import{differenceInCalendarWeeksValue as e}from"./difference-in-calendar-weeks.js";function t(t,n){return e(t,n,{weekStartsOn:1})}export{t as differenceInCalendarISOWeeks};

@@ -1,0 +1,1 @@
+import{todayZonedDateTime as e}from"./today-zoned-date-time.js";import{subDays as t}from"./sub-days.js";function n(n){return t(e(n),1)}export{n as yesterdayZonedDateTime};

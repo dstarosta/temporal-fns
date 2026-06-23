@@ -1,0 +1,1 @@
+import{withDate as e}from"./helpers/convert.js";import{zeroBelowMinute as t}from"./helpers/zero-time.js";function n(n){return n instanceof Date?e(n,e=>t(e)):t(n)}function r(e){return n(e)}export{r as startOfMinute,n as startOfMinuteValue};

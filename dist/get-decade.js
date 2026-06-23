@@ -1,0 +1,1 @@
+import{dateToPlainDateTime as e}from"./helpers/convert.js";function t(t){let n=t instanceof Date?e(t).year:t.year;return Math.floor(n/10)*10}export{t as getDecade};

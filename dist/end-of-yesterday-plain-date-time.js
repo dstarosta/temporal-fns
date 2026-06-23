@@ -1,0 +1,1 @@
+import{endOfDay as e}from"./end-of-day.js";import{yesterdayPlainDateTime as t}from"./yesterday-plain-date-time.js";function n(){return e(t())}export{n as endOfYesterdayPlainDateTime};

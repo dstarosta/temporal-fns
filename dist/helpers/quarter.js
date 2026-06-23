@@ -1,0 +1,1 @@
+function e(e){return e-(e-1)%3}function t(t){return e(t)+2}export{t as quarterEndMonth,e as quarterStartMonth};

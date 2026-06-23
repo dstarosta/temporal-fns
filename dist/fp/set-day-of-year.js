@@ -1,0 +1,1 @@
+import{setDayOfYear as e}from"../set-day-of-year.js";import{convertToFP as t}from"./helpers/convert-to-fp.js";const n=t(e,2);export{n as setDayOfYear};

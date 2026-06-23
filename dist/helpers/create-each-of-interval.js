@@ -1,0 +1,1 @@
+import{compare as e}from"./compare.js";function t(t,n,r,i){let a=e(t.start,t.end)>0,o=r(a?t.end:t.start),s=r(a?t.start:t.end),c=n?.step??1;if(c===0)return[];let l=a;c<0&&(c=-c,l=!l);let u=[],d=o;for(;e(d,s)<=0;)l?u.unshift(d):u.push(d),d=i(d,c);return u}export{t as eachOfInterval};

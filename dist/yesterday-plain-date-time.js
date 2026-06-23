@@ -1,0 +1,1 @@
+import{todayPlainDateTime as e}from"./today-plain-date-time.js";import{subDays as t}from"./sub-days.js";function n(){return t(e(),1)}export{n as yesterdayPlainDateTime};

@@ -1,0 +1,1 @@
+import{isSameWeek as e}from"./is-same-week.js";function t(t,n){return t instanceof Date&&n instanceof Date,e(t,n,{weekStartsOn:1})}export{t as isSameISOWeek};

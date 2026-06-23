@@ -1,0 +1,1 @@
+import{compare as e}from"./helpers/compare.js";import{startOfISOWeekYear as t}from"./start-of-iso-week-year.js";function n(n,r){return n instanceof Date&&r instanceof Date,e(t(n),t(r))===0}export{n as isSameISOWeekYear};

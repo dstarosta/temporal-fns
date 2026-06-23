@@ -1,0 +1,1 @@
+import{compare as e}from"./helpers/compare.js";function t(t){let[n,...r]=t;if(n===void 0)throw RangeError(`max() requires a non-empty array.`);let i=n;for(let t of r)e(t,i)>0&&(i=t);return i}function n(e){return t(e)}export{n as max,t as maxValue};

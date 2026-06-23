@@ -1,0 +1,1 @@
+import{compare as e}from"./helpers/compare.js";import{startOfMinuteValue as t}from"./start-of-minute.js";function n(n,r){return e(t(n),t(r))===0}function r(e,t){return n(e,t)}export{r as isSameMinute,n as isSameMinuteValue};

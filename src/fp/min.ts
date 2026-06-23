@@ -1,0 +1,8 @@
+import { min as fn } from '../min.js';
+import { convertToFP } from './helpers/convert-to-fp.js';
+import { type FPFn1 } from './types.js';
+
+/**
+ * Curried, data-last variant of {@link min}.
+ */
+export const min: FPFn1<Date, readonly Date[]> = convertToFP(fn, 1) as FPFn1<Date, readonly Date[]>;

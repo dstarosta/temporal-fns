@@ -1,0 +1,1 @@
+import{compare as e}from"./helpers/compare.js";function t(t,n){let[r,i]=e(n.start,n.end)<=0?[n.start,n.end]:[n.end,n.start];return e(t,r)>=0&&e(t,i)<=0}export{t as isWithinInterval};

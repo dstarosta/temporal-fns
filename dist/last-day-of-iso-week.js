@@ -1,0 +1,1 @@
+import{lastDayOfWeek as e}from"./last-day-of-week.js";function t(t){return t instanceof Date,e(t,{weekStartsOn:1})}export{t as lastDayOfISOWeek};

@@ -1,0 +1,1 @@
+import{compare as e}from"./helpers/compare.js";function t(t,n){return e(t,n)}export{t as compareAsc};

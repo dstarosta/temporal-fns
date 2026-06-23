@@ -1,0 +1,1 @@
+import{dateToPlainDateTime as e}from"./helpers/convert.js";function t(t){return t instanceof Date?e(t).daysInMonth:t.daysInMonth}export{t as getDaysInMonth};

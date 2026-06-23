@@ -1,0 +1,1 @@
+import{endOfHour as e}from"../end-of-hour.js";import{convertToFP as t}from"./helpers/convert-to-fp.js";const n=t(e,1);export{n as endOfHour};

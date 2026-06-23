@@ -1,0 +1,1 @@
+import{addDaysValue as e}from"./add-days.js";import{getWeekValue as t}from"./helpers/local-week.js";function n(n,r,i){return e(n,-(t(n,i)-r)*7)}export{n as setWeek};

@@ -1,0 +1,1 @@
+import{getISOWeekValue as e,getISOWeekYearValue as t}from"./helpers/iso-week.js";function n(n){let r=t(n);return e(Temporal.PlainDate.from({year:r,month:12,day:28}))}export{n as getISOWeeksInYear};

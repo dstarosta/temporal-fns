@@ -1,0 +1,1 @@
+import{setDefaultOptionsValue as e}from"./helpers/default-options.js";function t(t){e(t)}export{t as setDefaultOptions};

@@ -1,0 +1,1 @@
+import{closestIndexTo as e}from"./closest-index-to.js";function t(t,n){let r=e(t,n);return r===void 0?void 0:n[r]}export{t as closestTo};

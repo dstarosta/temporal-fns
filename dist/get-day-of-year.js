@@ -1,0 +1,1 @@
+import{differenceInCalendarDaysValue as e}from"./difference-in-calendar-days.js";import{startOfYear as t}from"./start-of-year.js";function n(n){return n instanceof Date,e(n,t(n))+1}export{n as getDayOfYear};

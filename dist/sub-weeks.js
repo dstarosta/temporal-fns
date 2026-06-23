@@ -1,0 +1,1 @@
+import{createSubDateUnit as e}from"./helpers/create-add-unit.js";const t=e(`weeks`);export{t as subWeeks};

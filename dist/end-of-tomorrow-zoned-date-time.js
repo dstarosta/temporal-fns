@@ -1,0 +1,1 @@
+import{endOfDay as e}from"./end-of-day.js";import{tomorrowZonedDateTime as t}from"./tomorrow-zoned-date-time.js";function n(n){return e(t(n))}export{n as endOfTomorrowZonedDateTime};

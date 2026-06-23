@@ -1,0 +1,1 @@
+import{addDays as e}from"./add-days.js";import{todayPlainDateTime as t}from"./today-plain-date-time.js";function n(){return e(t(),1)}export{n as tomorrowPlainDateTime};

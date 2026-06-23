@@ -1,0 +1,1 @@
+import{isoDayOfWeekToSundayBased as e}from"./helpers/week.js";function t(t){let n=t instanceof Date?t.getDay():e(t.dayOfWeek);return n===0||n===6}function n(e){return t(e)}export{n as isWeekend,t as isWeekendValue};

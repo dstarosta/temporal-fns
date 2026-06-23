@@ -1,0 +1,1 @@
+import{withDate as e}from"./helpers/convert.js";import{endTime as t}from"./helpers/zero-time.js";function n(n){return n instanceof Date?e(n,e=>t(e.with({day:e.daysInMonth}))):t(n.with({day:n.daysInMonth}))}export{n as endOfMonth};

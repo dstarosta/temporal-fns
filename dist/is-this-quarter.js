@@ -1,0 +1,1 @@
+import{constructNowValue as e}from"./construct-now.js";import{isSameQuarterValue as t}from"./is-same-quarter.js";function n(n){return t(n,e(n))}export{n as isThisQuarter};

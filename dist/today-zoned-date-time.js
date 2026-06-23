@@ -1,0 +1,1 @@
+function e(e=Temporal.Now.timeZoneId()){return Temporal.Now.zonedDateTimeISO(e)}export{e as todayZonedDateTime};

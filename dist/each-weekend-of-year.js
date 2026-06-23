@@ -1,0 +1,1 @@
+import{eachWeekendOfInterval as e}from"./each-weekend-of-interval.js";import{endOfYear as t}from"./end-of-year.js";import{startOfYear as n}from"./start-of-year.js";function r(r){return r instanceof Date,e({start:n(r),end:t(r)})}export{r as eachWeekendOfYear};

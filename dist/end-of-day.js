@@ -1,0 +1,1 @@
+import{withDate as e}from"./helpers/convert.js";import{endTime as t}from"./helpers/zero-time.js";function n(n){return n instanceof Date?e(n,e=>t(e)):t(n)}export{n as endOfDay};

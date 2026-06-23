@@ -1,0 +1,1 @@
+import{getDayValue as e}from"./helpers/week.js";import{subDaysValue as t}from"./sub-days.js";function n(n,r){let i=e(n)-r;return i<=0&&(i+=7),t(n,i)}function r(e,t){return n(e,t)}export{r as previousDay,n as previousDayValue};

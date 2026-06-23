@@ -1,0 +1,1 @@
+function e(e){let t=Math.trunc(e*60);return t===0?0:t}export{e as hoursToMinutes};

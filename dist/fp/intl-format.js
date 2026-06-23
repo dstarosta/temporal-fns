@@ -1,0 +1,1 @@
+import{intlFormat as e}from"../intl-format.js";import{convertToFP as t}from"./helpers/convert-to-fp.js";const n=t((t,n={},r)=>r?e(t,n,r):e(t,n),3);export{n as intlFormat};

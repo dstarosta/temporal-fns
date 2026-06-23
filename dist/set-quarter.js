@@ -1,0 +1,1 @@
+import{getQuarterValue as e}from"./get-quarter.js";import{setMonth as t}from"./set-month.js";function n(n,r){let i=r-e(n);return n instanceof Date?t(n,n.getMonth()+i*3):t(n,n.month-1+i*3)}export{n as setQuarter};

@@ -1,0 +1,1 @@
+import{dateToPlainDateTime as e}from"./helpers/convert.js";function t(t){if(t instanceof Date){let n=e(t);return{year:n.year,month:n.month}}return{year:t.year,month:t.month}}function n(e,n){let r=t(e),i=t(n);return(r.year-i.year)*12+(r.month-i.month)}function r(e,t){return n(e,t)}export{r as differenceInCalendarMonths,n as differenceInCalendarMonthsValue};

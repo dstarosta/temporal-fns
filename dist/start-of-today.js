@@ -1,0 +1,1 @@
+import{startOfDay as e}from"./start-of-day.js";function t(){return e(new Date)}export{t as startOfToday};

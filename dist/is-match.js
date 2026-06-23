@@ -1,0 +1,1 @@
+import{isValid as e}from"./is-valid.js";import{parse as t}from"./parse.js";function n(n,r,i){return e(t(n,r,new Date,i))}export{n as isMatch};

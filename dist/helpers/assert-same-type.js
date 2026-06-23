@@ -1,0 +1,1 @@
+function e(e,t){if(!(e instanceof Temporal.PlainDate&&t instanceof Temporal.PlainDate||e instanceof Temporal.PlainDateTime&&t instanceof Temporal.PlainDateTime||e instanceof Temporal.ZonedDateTime&&t instanceof Temporal.ZonedDateTime))throw TypeError(`Cannot compare values of different Temporal types.`)}export{e as assertSameType};

@@ -1,0 +1,1 @@
+function e(e){return e instanceof Temporal.PlainDateTime}export{e as isPlainDateTime};

@@ -1,0 +1,1 @@
+import{plainDateResultAs as e}from"./helpers/plain-date-result.js";import{startOfWeekYearPlainDate as t}from"./helpers/local-week.js";function n(n,r){return e(t(n,r),n)}export{n as startOfWeekYear};

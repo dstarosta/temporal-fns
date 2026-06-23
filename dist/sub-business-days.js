@@ -1,0 +1,1 @@
+import{addBusinessDays as e}from"./helpers/business-days.js";function t(t,n){return t instanceof Date,e(t,-n)}export{t as subBusinessDays};

@@ -1,0 +1,1 @@
+import{previousDayValue as e}from"./previous-day.js";function t(t){return e(t,0)}export{t as previousSunday};

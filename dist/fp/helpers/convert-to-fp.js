@@ -1,0 +1,1 @@
+function e(e,t){function n(r){return r.length>=t?e(...r.slice(0,t).reverse()):(...e)=>n([...r,...e])}return n([])}export{e as convertToFP};

@@ -1,0 +1,1 @@
+function e(e){return Temporal.Instant.fromEpochMilliseconds(e*1e3).toZonedDateTimeISO(`UTC`).toPlainDateTime()}export{e as fromUnixTimePlainDateTime};

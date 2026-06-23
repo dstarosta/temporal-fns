@@ -1,0 +1,1 @@
+import{formatISODuration as e}from"../format-iso-duration.js";import{convertToFP as t}from"./helpers/convert-to-fp.js";const n=t(e,1);export{n as formatISODuration};

@@ -1,0 +1,1 @@
+import{createSubTimeUnit as e}from"./helpers/create-add-unit.js";const t=e(`minutes`);export{t as subMinutes};

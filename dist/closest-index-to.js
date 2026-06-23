@@ -1,0 +1,1 @@
+import{toEpochMilliseconds as e}from"./helpers/to-epoch-milliseconds.js";function t(t,n){let r=e(t),i,a=-1;for(let[t,o]of n.entries()){let n=Math.abs(r-e(o));(i===void 0||n<a)&&(i=t,a=n)}return i}export{t as closestIndexTo};

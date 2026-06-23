@@ -1,0 +1,1 @@
+import{differenceInCalendarWeeksValue as e}from"./difference-in-calendar-weeks.js";import{startOfMonth as t}from"./start-of-month.js";import{lastDayOfMonth as n}from"./last-day-of-month.js";function r(r,i){return r instanceof Date,e(n(r),t(r),i)+1}export{r as getWeeksInMonth};

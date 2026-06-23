@@ -1,0 +1,1 @@
+import{hoursToSeconds as e}from"../hours-to-seconds.js";import{convertToFP as t}from"./helpers/convert-to-fp.js";const n=t(e,1);export{n as hoursToSeconds};

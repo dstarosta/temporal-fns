@@ -1,0 +1,1 @@
+import{nextDayValue as e}from"./next-day.js";function t(t){return e(t,3)}export{t as nextWednesday};

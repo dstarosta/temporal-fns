@@ -1,0 +1,1 @@
+import{withDate as e}from"./helpers/convert.js";import{getISOWeekValue as t}from"./helpers/iso-week.js";function n(n,r){let i=t(n)-r;return n instanceof Date?e(n,e=>e.subtract({days:i*7})):n.subtract({days:i*7})}export{n as setISOWeek};

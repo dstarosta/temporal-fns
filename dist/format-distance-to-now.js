@@ -1,0 +1,1 @@
+import{constructNowValue as e}from"./construct-now.js";import{formatDistanceValue as t}from"./format-distance.js";function n(n,r){return t(n,e(n),r)}export{n as formatDistanceToNow};

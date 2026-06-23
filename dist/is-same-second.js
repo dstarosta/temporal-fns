@@ -1,0 +1,1 @@
+import{compare as e}from"./helpers/compare.js";import{startOfSecondValue as t}from"./start-of-second.js";function n(n,r){return e(t(n),t(r))===0}function r(e,t){return n(e,t)}export{r as isSameSecond,n as isSameSecondValue};

@@ -1,0 +1,1 @@
+import{setYear as e}from"../set-year.js";import{convertToFP as t}from"./helpers/convert-to-fp.js";const n=t(e,2);export{n as setYear};

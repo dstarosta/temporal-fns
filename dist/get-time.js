@@ -1,0 +1,1 @@
+import{toEpochMilliseconds as e}from"./helpers/to-epoch-milliseconds.js";function t(t){return e(t)}export{t as getTime};

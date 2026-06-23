@@ -1,0 +1,1 @@
+import{isFuture as e}from"../is-future.js";import{convertToFP as t}from"./helpers/convert-to-fp.js";const n=t(e,1);export{n as isFuture};

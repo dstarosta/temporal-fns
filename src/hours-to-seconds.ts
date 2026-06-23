@@ -1,0 +1,21 @@
+const secondsInHour = 3600;
+
+/**
+ * @summary Convert hours to seconds.
+ *
+ * @description
+ * Convert a number of hours to a full number of seconds.
+ *
+ * @param hours - The number of hours to be converted
+ *
+ * @returns The number of hours converted in seconds
+ *
+ * @example
+ * // Convert 2 hours to seconds:
+ * const result = hoursToSeconds(2)
+ * //=> 7200
+ */
+export function hoursToSeconds(hours: number): number {
+  const result = Math.trunc(hours * secondsInHour);
+  return result === 0 ? 0 : result;
+}

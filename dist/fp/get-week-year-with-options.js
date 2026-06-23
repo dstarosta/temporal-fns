@@ -1,0 +1,1 @@
+import{getWeekYear as e}from"../get-week-year.js";import{convertToFP as t}from"./helpers/convert-to-fp.js";const n=t(e,2);export{n as getWeekYearWithOptions};

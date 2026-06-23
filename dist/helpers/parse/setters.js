@@ -1,0 +1,1 @@
+function e(e,t){let n=[...new Set(t.map(e=>e.priority))].sort((e,t)=>t-e),r={},i=e;for(let e of n){let n=t.filter(t=>t.priority===e).sort((e,t)=>t.subPriority-e.subPriority)[0];if(n){if(n.validate&&!n.validate(i))return;i=n.apply(i,r)}}return i}export{e as applySetters};

@@ -1,0 +1,1 @@
+import{compare as e}from"./helpers/compare.js";function t(t,n){let r=e(t,n);return r>0?-1:+(r<0)}export{t as compareDesc};

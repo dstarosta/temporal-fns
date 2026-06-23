@@ -1,0 +1,1 @@
+function e(){return Temporal.Now.plainDateISO().add({days:1})}export{e as tomorrowPlainDate};

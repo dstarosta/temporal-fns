@@ -1,0 +1,1 @@
+function e(e){let t=e*1e3;return t===0?0:t}export{e as secondsToMilliseconds};

@@ -1,0 +1,1 @@
+import{tomorrowPlainDateTime as e}from"./tomorrow-plain-date-time.js";import{startOfDay as t}from"./start-of-day.js";function n(){return t(e())}export{n as startOfTomorrowPlainDateTime};

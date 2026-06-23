@@ -1,0 +1,1 @@
+import{subDays as e}from"./sub-days.js";import{startOfDay as t}from"./start-of-day.js";function n(){return t(e(new Date,1))}export{n as startOfYesterday};

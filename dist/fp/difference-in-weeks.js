@@ -1,0 +1,1 @@
+import{differenceInWeeks as e}from"../helpers/create-difference-in-date-unit.js";import{convertToFP as t}from"./helpers/convert-to-fp.js";const n=t(e,2);export{n as differenceInWeeks};

@@ -1,0 +1,1 @@
+import{dateToPlainDateTime as e}from"./helpers/convert.js";function t(t){let n=t instanceof Date?e(t):t;return n.day===n.daysInMonth}export{t as isLastDayOfMonth};

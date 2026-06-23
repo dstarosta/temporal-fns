@@ -1,0 +1,1 @@
+import{withDate as e}from"./helpers/convert.js";function t(e,t){let n=t-e.dayOfWeek;return e.add({days:n})}function n(n,r){return n instanceof Date?e(n,e=>t(e,r)):t(n,r)}export{n as setISODay};

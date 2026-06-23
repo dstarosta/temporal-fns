@@ -1,0 +1,1 @@
+function e(e){return Math.floor(e/10)*10}function t(t){return e(t)+9}export{t as decadeEndYear,e as decadeStartYear};

@@ -1,0 +1,1 @@
+import{dateToPlainDateTime as e}from"./helpers/convert.js";function t(t){return t instanceof Date?e(t).year:t.year}function n(e,n){return t(e)-t(n)}function r(e,t){return n(e,t)}export{r as differenceInCalendarYears,n as differenceInCalendarYearsValue};

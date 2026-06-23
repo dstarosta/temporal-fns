@@ -1,0 +1,1 @@
+import{withDate as e}from"./helpers/convert.js";import{zeroTime as t}from"./helpers/zero-time.js";function n(n){return n instanceof Date?e(n,e=>t(e.with({month:1,day:1}))):t(n.with({month:1,day:1}))}function r(e){return n(e)}export{r as startOfYear,n as startOfYearValue};

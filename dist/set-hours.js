@@ -1,0 +1,1 @@
+import{withDate as e}from"./helpers/convert.js";function t(t,n){return t instanceof Date?e(t,e=>e.with({hour:n})):t.with({hour:n})}export{t as setHours};

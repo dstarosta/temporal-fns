@@ -1,0 +1,1 @@
+import{parse as e}from"../parse.js";import{convertToFP as t}from"./helpers/convert-to-fp.js";const n=t((t,n,r,i)=>e(t,n,r,i),4);export{n as parseWithOptions};

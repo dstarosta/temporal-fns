@@ -1,0 +1,1 @@
+import{addMonths as e}from"./add-months.js";function t(t,n){return t instanceof Date,e(t,n*3)}export{t as addQuarters};

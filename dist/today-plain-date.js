@@ -1,0 +1,1 @@
+function e(){return Temporal.Now.plainDateISO()}export{e as todayPlainDate};

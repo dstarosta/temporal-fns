@@ -1,0 +1,1 @@
+import{previousSunday as e}from"../previous-sunday.js";import{convertToFP as t}from"./helpers/convert-to-fp.js";const n=t(e,1);export{n as previousSunday};

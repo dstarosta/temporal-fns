@@ -1,0 +1,1 @@
+import{toPlainDate as e}from"./helpers/plain-date-result.js";function t(t){return e(t)}export{t as toPlainDate};

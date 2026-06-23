@@ -1,0 +1,1 @@
+import{getISOWeekYearValue as e}from"./helpers/iso-week.js";import{compare as t}from"./helpers/compare.js";import{subISOWeekYearsValue as n}from"./sub-iso-week-years.js";function r(r,i){let a=t(r,i),o=Math.abs(e(r)-e(i)),s=a*(o-+(t(n(r,a*o),i)===-a));return s===0?0:s}export{r as differenceInISOWeekYears};

@@ -1,0 +1,1 @@
+import{endOfDay as e}from"./end-of-day.js";function t(){return e(new Date)}export{t as endOfToday};

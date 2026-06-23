@@ -1,0 +1,1 @@
+import{setMilliseconds as e}from"../set-milliseconds.js";import{convertToFP as t}from"./helpers/convert-to-fp.js";const n=t(e,2);export{n as setMilliseconds};

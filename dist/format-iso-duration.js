@@ -1,0 +1,1 @@
+function e(e){let{years:t=0,months:n=0,weeks:r=0,days:i=0,hours:a=0,minutes:o=0,seconds:s=0}=e;return`P${String(t)}Y${String(n)}M${String(r)}W${String(i)}DT${String(a)}H${String(o)}M${String(s)}S`}export{e as formatISODuration};

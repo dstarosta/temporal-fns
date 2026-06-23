@@ -1,0 +1,1 @@
+import{getDayValue as e}from"./helpers/week.js";import{addDaysValue as t}from"./add-days.js";function n(n,r){let i=r-e(n);return i<=0&&(i+=7),t(n,i)}function r(e,t){return n(e,t)}export{r as nextDay,n as nextDayValue};

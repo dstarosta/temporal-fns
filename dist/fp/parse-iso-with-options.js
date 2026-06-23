@@ -1,0 +1,1 @@
+import{parseISO as e}from"../parse-iso.js";import{convertToFP as t}from"./helpers/convert-to-fp.js";const n=t((t,n)=>e(t,n),2);export{n as parseISOWithOptions};

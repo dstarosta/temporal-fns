@@ -1,0 +1,1 @@
+import{constructNowValue as e}from"./construct-now.js";import{isSameWeekValue as t}from"./is-same-week.js";function n(n){return t(n,e(n),{weekStartsOn:1})}export{n as isThisISOWeek};

@@ -1,0 +1,1 @@
+import{constructNowTimeValue as e}from"./construct-now.js";import{isSameMinuteValue as t}from"./is-same-minute.js";function n(n){return t(n,e(n))}export{n as isThisMinute};

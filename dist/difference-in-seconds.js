@@ -1,0 +1,1 @@
+import{createDifferenceInTimeUnit as e,createDifferenceInTimeUnitValue as t}from"./helpers/create-difference-in-unit.js";const n=t(`seconds`),r=e(`seconds`);export{r as differenceInSeconds,n as differenceInSecondsValue};

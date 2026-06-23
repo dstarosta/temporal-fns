@@ -1,0 +1,1 @@
+import{dateToPlainDateTime as e}from"./convert.js";function t(t){return t instanceof Date?e(t):t}export{t as toComparable};

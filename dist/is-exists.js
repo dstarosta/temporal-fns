@@ -1,0 +1,1 @@
+function e(e,t,n){try{return Temporal.PlainDate.from({year:e,month:t+1,day:n},{overflow:`reject`}),!0}catch{return!1}}export{e as isExists};

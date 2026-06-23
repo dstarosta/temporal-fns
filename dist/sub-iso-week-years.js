@@ -1,0 +1,1 @@
+import{addISOWeekYearsValue as e}from"./add-iso-week-years.js";function t(t,n){return e(t,-n)}function n(e,n){return t(e,n)}export{n as subISOWeekYears,t as subISOWeekYearsValue};

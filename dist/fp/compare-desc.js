@@ -1,0 +1,1 @@
+import{compareDesc as e}from"../compare-desc.js";import{convertToFP as t}from"./helpers/convert-to-fp.js";const n=t(e,2);export{n as compareDesc};
