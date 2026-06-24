@@ -66,13 +66,31 @@ export function intervalToDuration(interval: Interval<Date | TimeLike>): Duratio
     duration.months = months;
   }
 
-  const remainingDays = duration.months
+  const remainingAfterMonths = duration.months
     ? add(remainingMonths, { months: duration.months })
     : remainingMonths;
-  const days = differenceInDaysFields(getDateTimeFields(end), getDateTimeFields(remainingDays));
+  const totalDays = differenceInDaysFields(
+    getDateTimeFields(end),
+    getDateTimeFields(remainingAfterMonths)
+  );
+
+  // date-fns' own Duration type declares `weeks`, but its intervalToDuration never produces it -
+  // every day-count interval reports only `days`, even for multi-week spans. temporal-fns
+  // deliberately diverges and decomposes the remainder into weeks (always exactly 7 days, no
+  // calendar ambiguity) plus a days remainder, matching what formatDuration/Duration document.
+  const weeks = Math.trunc(totalDays / 7);
+  if (weeks) {
+    duration.weeks = weeks;
+  }
+
+  const days = totalDays - weeks * 7;
   if (days) {
     duration.days = days;
   }
+
+  const remainingDays = weeks
+    ? add(remainingAfterMonths, { days: weeks * 7 })
+    : remainingAfterMonths;
 
   // remainingDays is never a Temporal.PlainDate here: the `interval` overloads
   // only accept Date | TimeLike (PlainDate has no time component, so it's

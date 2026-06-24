@@ -59,6 +59,7 @@ interface FormatDurationOptions {
   format?: FormatDurationUnit[];
   zero?: boolean;
   delimiter?: string;
+  locale?: Intl.LocalesArgument;
 }
 //#endregion
 //#region src/fp/add.d.ts
@@ -629,6 +630,7 @@ interface FormatDistanceStrictOptions {
   addSuffix?: boolean;
   unit?: FormatDistanceStrictUnit;
   roundingMethod?: FormatDistanceStrictRoundingMethod;
+  locale?: Intl.LocalesArgument;
 }
 //#endregion
 //#region src/fp/format-distance-strict-with-options.d.ts
@@ -664,6 +666,7 @@ declare const formatDistanceToNowStrictWithOptions: FPFn2<string, FormatDistance
 interface FormatDistanceOptions {
   includeSeconds?: boolean;
   addSuffix?: boolean;
+  locale?: Intl.LocalesArgument;
 }
 //#endregion
 //#region src/fp/format-distance-to-now-with-options.d.ts

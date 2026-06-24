@@ -10,6 +10,7 @@ interface FormatDistanceStrictOptions {
   addSuffix?: boolean;
   unit?: FormatDistanceStrictUnit;
   roundingMethod?: FormatDistanceStrictRoundingMethod;
+  locale?: Intl.LocalesArgument;
 }
 /**
  * @summary Return the distance between the given dates in words.
@@ -20,7 +21,7 @@ interface FormatDistanceStrictOptions {
  * 'less than' and the like.
  *
  * | Distance between dates | Result              |
- * |--------------------------|---------------------|
+ * |------------------------|---------------------|
  * | 0 ... 59 secs          | [0..59] seconds     |
  * | 1 ... 59 mins          | [1..59] minutes     |
  * | 1 ... 23 hrs           | [1..23] hours       |
@@ -58,7 +59,7 @@ declare function formatDistanceStrict(laterDate: Date, earlierDate: Date, option
  * 'less than' and the like.
  *
  * | Distance between dates | Result              |
- * |--------------------------|---------------------|
+ * |------------------------|---------------------|
  * | 0 ... 59 secs          | [0..59] seconds     |
  * | 1 ... 59 mins          | [1..59] minutes     |
  * | 1 ... 23 hrs           | [1..23] hours       |

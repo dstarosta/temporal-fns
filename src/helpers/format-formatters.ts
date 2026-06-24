@@ -1,7 +1,7 @@
 import { addLeadingZeros, getDateTimeFields, getOffsetMinutes } from './format-fields.js';
 import { getCachedDateTimeFormat } from './intl-cache.js';
 import { getISOWeekValue, getISOWeekYearValue } from './iso-week.js';
-import { getWordPart } from './intl-words.js';
+import { formatWithIntl, getWordPart } from './intl-words.js';
 import { getWeekValueResolved, getWeekYearValueResolved } from './local-week.js';
 import { toEpochMilliseconds } from './to-epoch-milliseconds.js';
 import { isoDayOfWeekToSundayBased } from './week.js';
@@ -60,11 +60,13 @@ function getTimeZoneName(
   return getWordPart(date, context.locale, { timeZoneName: style }, 'timeZoneName');
 }
 
-// en-US is the default/only built-in locale (per the project's
-// locale-aware-via-Intl design): word lookups go through Intl.DateTimeFormat
-// wherever it has a native option (month/weekday/era/dayPeriod names).
-// Ordinal suffixes and quarter names have no Intl.DateTimeFormat option at
-// all, so they're the only hardcoded (en-US) word data in this module.
+// English ordinal suffixes have no Intl.DateTimeFormat option at all, so they're the only
+// hardcoded (English) word data in this module. There's no generic Intl primitive for rendering
+// an ordinal *suffix string* in an arbitrary locale (Intl.PluralRules only exposes the
+// grammatical category, e.g. 'one'/'few'/'other', not locale-specific suffix text) - so rather
+// than guess at other languages' ordinal grammar, this only applies the English suffix for an
+// English locale and falls back to the plain number otherwise, matching what date-fns' own
+// locale-aware long-date formats do for non-English locales (no ordinal suffix at all).
 const ordinalSuffixes: Record<Intl.LDMLPluralRule, string> = {
   zero: 'th',
   one: 'st',
@@ -76,8 +78,77 @@ const ordinalSuffixes: Record<Intl.LDMLPluralRule, string> = {
 
 const enUSOrdinalRules = new Intl.PluralRules('en-US', { type: 'ordinal' });
 
-function ordinalNumber(number: number): string {
+function isEnglishLocale(locale: Intl.LocalesArgument): boolean {
+  const tag = Array.isArray(locale) ? (locale[0] as string | Intl.Locale | undefined) : locale;
+  // Unreachable through the public format() API: resolveLocale() always defaults to 'en-US'
+  // before context.locale (the only caller of isEnglishLocale) is ever set, so `tag` is never
+  // actually undefined here in practice. Kept as a defensive fallback in case that invariant
+  // ever changes, or this function is called directly in the future.
+  /* v8 ignore next 3 */
+  if (tag === undefined) {
+    return true;
+  }
+  try {
+    const languageTag = tag instanceof Intl.Locale ? tag : new Intl.Locale(tag as string);
+    return languageTag.language === 'en';
+  } catch {
+    return true;
+  }
+}
+
+function ordinalNumber(number: number, locale: Intl.LocalesArgument): string {
+  if (!isEnglishLocale(locale)) {
+    return String(number);
+  }
   return String(number) + ordinalSuffixes[enUSOrdinalRules.select(number)];
+}
+
+type IntlDateTimeStyle = 'short' | 'medium' | 'long' | 'full';
+
+function styleForRunLength(length: number): IntlDateTimeStyle {
+  switch (length) {
+    case 1: {
+      return 'short';
+    }
+    case 2: {
+      return 'medium';
+    }
+    case 3: {
+      return 'long';
+    }
+    default: {
+      return 'full';
+    }
+  }
+}
+
+// P/p ("long localized date/time") are the one case where the actual rendered text depends on
+// `locale` itself - every other long-date width is a fixed pattern of other tokens (handled by
+// tokenizeFormat/the rest of `formatters`), but P/p have no Intl.DateTimeFormat option for
+// reproducing date-fns' own per-locale literal templates (date order, connector words like
+// "at"), so this calls Intl.DateTimeFormat's dateStyle/timeStyle directly instead of replicating
+// date-fns' bundled per-locale pattern strings. A combined run like 'PPpp' is handled in one
+// Intl.DateTimeFormat call (dateStyle + timeStyle together) rather than two separate calls
+// joined by a literal connector word, so the connector itself comes from Intl too (e.g. "a las"
+// for Spanish, "à" for French) instead of being hardcoded English ("at").
+function dateTimeLongToken(
+  date: Date | DateLike,
+  token: string,
+  context: FormatterContext
+): string {
+  const dateRun = /^P+/.exec(token)?.[0].length ?? 0;
+  // eslint-disable-next-line sonarjs/super-linear-regex
+  const timeRun = /p+$/.exec(token)?.[0].length ?? 0;
+
+  const options: Intl.DateTimeFormatOptions = {};
+  if (dateRun) {
+    options.dateStyle = styleForRunLength(dateRun);
+  }
+  if (timeRun) {
+    options.timeStyle = styleForRunLength(timeRun);
+  }
+
+  return formatWithIntl(date, context.locale, options);
 }
 
 export const quarterNames = {
@@ -139,7 +210,7 @@ function monthWord(date: Date | DateLike, token: string, locale: Intl.LocalesArg
   return getWordPart(date, locale, { month: 'long' }, 'month');
 }
 
-function quarterToken(token: string, month: number): string {
+function quarterToken(token: string, month: number, locale: Intl.LocalesArgument): string {
   const quarterNumber = getQuarterFromMonth(month);
   switch (token) {
     case 'Q':
@@ -152,7 +223,7 @@ function quarterToken(token: string, month: number): string {
     }
     case 'Qo':
     case 'qo': {
-      return ordinalNumber(quarterNumber);
+      return ordinalNumber(quarterNumber, locale);
     }
     case 'QQQ':
     case 'qqq': {
@@ -332,24 +403,27 @@ function getLocalDayOfWeek(date: Date | DateLike, weekStartsOn: number): number 
 export const formatters: Record<string, Formatter> = {
   G: (date, token, { locale }) => eraWord(date, token, locale),
 
-  y: (date, token) => {
+  P: dateTimeLongToken,
+  p: dateTimeLongToken,
+
+  y: (date, token, { locale }) => {
     const fields = getDateTimeFields(date);
     const signedYear = fields.year;
     const year = signedYear > 0 ? signedYear : 1 - signedYear;
     if (token === 'yo') {
-      return ordinalNumber(year);
+      return ordinalNumber(year, locale);
     }
     return addLeadingZeros(token === 'yy' ? year % 100 : year, token.length);
   },
 
-  Y: (date, token, { weekStartsOn, firstWeekContainsDate }) => {
+  Y: (date, token, { locale, weekStartsOn, firstWeekContainsDate }) => {
     const signedWeekYear = getWeekYearValueResolved(date, weekStartsOn, firstWeekContainsDate);
     const weekYear = signedWeekYear > 0 ? signedWeekYear : 1 - signedWeekYear;
     if (token === 'YY') {
       return addLeadingZeros(weekYear % 100, 2);
     }
     if (token === 'Yo') {
-      return ordinalNumber(weekYear);
+      return ordinalNumber(weekYear, locale);
     }
     return addLeadingZeros(weekYear, token.length);
   },
@@ -358,8 +432,8 @@ export const formatters: Record<string, Formatter> = {
 
   u: (date, token) => addLeadingZeros(getDateTimeFields(date).year, token.length),
 
-  Q: (date, token) => quarterToken(token, getDateTimeFields(date).month),
-  q: (date, token) => quarterToken(token, getDateTimeFields(date).month),
+  Q: (date, token, { locale }) => quarterToken(token, getDateTimeFields(date).month, locale),
+  q: (date, token, { locale }) => quarterToken(token, getDateTimeFields(date).month, locale),
 
   M: (date, token, { locale }) => {
     const fields = getDateTimeFields(date);
@@ -370,7 +444,7 @@ export const formatters: Record<string, Formatter> = {
       return addLeadingZeros(fields.month, 2);
     }
     if (token === 'Mo') {
-      return ordinalNumber(fields.month);
+      return ordinalNumber(fields.month, locale);
     }
     return monthWord(date, token, locale);
   },
@@ -384,39 +458,39 @@ export const formatters: Record<string, Formatter> = {
       return addLeadingZeros(fields.month, 2);
     }
     if (token === 'Lo') {
-      return ordinalNumber(fields.month);
+      return ordinalNumber(fields.month, locale);
     }
     return monthWord(date, token, locale);
   },
 
-  w: (date, token, { weekStartsOn, firstWeekContainsDate }) => {
+  w: (date, token, { locale, weekStartsOn, firstWeekContainsDate }) => {
     const week = getWeekValueResolved(date, weekStartsOn, firstWeekContainsDate);
     if (token === 'wo') {
-      return ordinalNumber(week);
+      return ordinalNumber(week, locale);
     }
     return addLeadingZeros(week, token.length);
   },
 
-  I: (date, token) => {
+  I: (date, token, { locale }) => {
     const isoWeek = getISOWeekValue(date);
     if (token === 'Io') {
-      return ordinalNumber(isoWeek);
+      return ordinalNumber(isoWeek, locale);
     }
     return addLeadingZeros(isoWeek, token.length);
   },
 
-  d: (date, token) => {
+  d: (date, token, { locale }) => {
     const fields = getDateTimeFields(date);
     if (token === 'do') {
-      return ordinalNumber(fields.day);
+      return ordinalNumber(fields.day, locale);
     }
     return addLeadingZeros(fields.day, token.length);
   },
 
-  D: (date, token) => {
+  D: (date, token, { locale }) => {
     const dayOfYear = getDayOfYearValue(date);
     if (token === 'Do') {
-      return ordinalNumber(dayOfYear);
+      return ordinalNumber(dayOfYear, locale);
     }
     return addLeadingZeros(dayOfYear, token.length);
   },
@@ -433,7 +507,7 @@ export const formatters: Record<string, Formatter> = {
       if (token === 'ee') {
         return addLeadingZeros(localDayOfWeek, 2);
       }
-      return ordinalNumber(localDayOfWeek);
+      return ordinalNumber(localDayOfWeek, locale);
     }
     return weekdayWord(date, token, locale);
   },
@@ -445,7 +519,7 @@ export const formatters: Record<string, Formatter> = {
         return String(localDayOfWeek);
       }
       if (token === 'co') {
-        return ordinalNumber(localDayOfWeek);
+        return ordinalNumber(localDayOfWeek, locale);
       }
       return addLeadingZeros(localDayOfWeek, token.length);
     }
@@ -464,7 +538,7 @@ export const formatters: Record<string, Formatter> = {
         return String(isoDayOfWeek);
       }
       if (token === 'io') {
-        return ordinalNumber(isoDayOfWeek);
+        return ordinalNumber(isoDayOfWeek, locale);
       }
       return addLeadingZeros(isoDayOfWeek, token.length);
     }
@@ -475,53 +549,53 @@ export const formatters: Record<string, Formatter> = {
   b: (date, token) => bDayPeriod(date, token),
   B: (date, token) => flexibleDayPeriod(date, token),
 
-  h: (date, token) => {
+  h: (date, token, { locale }) => {
     const fields = getDateTimeFields(date);
     const hours = fields.hour % 12 || 12;
     if (token === 'ho') {
-      return ordinalNumber(hours);
+      return ordinalNumber(hours, locale);
     }
     return addLeadingZeros(hours, token.length);
   },
 
-  H: (date, token) => {
+  H: (date, token, { locale }) => {
     const fields = getDateTimeFields(date);
     if (token === 'Ho') {
-      return ordinalNumber(fields.hour);
+      return ordinalNumber(fields.hour, locale);
     }
     return addLeadingZeros(fields.hour, token.length);
   },
 
-  K: (date, token) => {
+  K: (date, token, { locale }) => {
     const fields = getDateTimeFields(date);
     const hours = fields.hour % 12;
     if (token === 'Ko') {
-      return ordinalNumber(hours);
+      return ordinalNumber(hours, locale);
     }
     return addLeadingZeros(hours, token.length);
   },
 
-  k: (date, token) => {
+  k: (date, token, { locale }) => {
     const fields = getDateTimeFields(date);
     const hours = fields.hour === 0 ? 24 : fields.hour;
     if (token === 'ko') {
-      return ordinalNumber(hours);
+      return ordinalNumber(hours, locale);
     }
     return addLeadingZeros(hours, token.length);
   },
 
-  m: (date, token) => {
+  m: (date, token, { locale }) => {
     const fields = getDateTimeFields(date);
     if (token === 'mo') {
-      return ordinalNumber(fields.minute);
+      return ordinalNumber(fields.minute, locale);
     }
     return addLeadingZeros(fields.minute, token.length);
   },
 
-  s: (date, token) => {
+  s: (date, token, { locale }) => {
     const fields = getDateTimeFields(date);
     if (token === 'so') {
-      return ordinalNumber(fields.second);
+      return ordinalNumber(fields.second, locale);
     }
     return addLeadingZeros(fields.second, token.length);
   },

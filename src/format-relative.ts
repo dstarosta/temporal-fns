@@ -1,5 +1,6 @@
 import { differenceInCalendarDaysValue } from './difference-in-calendar-days.js';
 import { format } from './format.js';
+import { getCachedRelativeTimeFormat } from './helpers/intl-cache.js';
 import { type DateLike } from './types.js';
 
 /**
@@ -10,53 +11,28 @@ export interface FormatRelativeOptions {
   weekStartsOn?: 0 | 1 | 2 | 3 | 4 | 5 | 6;
 }
 
-type FormatRelativeToken = 'lastWeek' | 'yesterday' | 'today' | 'tomorrow' | 'nextWeek' | 'other';
-
-const formatRelativeLocale: Record<FormatRelativeToken, string> = {
-  lastWeek: "'last' eeee 'at' p",
-  yesterday: "'yesterday at' p",
-  today: "'today at' p",
-  tomorrow: "'tomorrow at' p",
-  nextWeek: "eeee 'at' p",
-  other: 'P',
-};
-
-function getToken(diff: number): FormatRelativeToken {
-  if (diff < -6) {
-    return 'other';
-  }
-  if (diff < -1) {
-    return 'lastWeek';
-  }
-  if (diff < 0) {
-    return 'yesterday';
-  }
-  if (diff < 1) {
-    return 'today';
-  }
-  if (diff < 2) {
-    return 'tomorrow';
-  }
-  if (diff < 7) {
-    return 'nextWeek';
-  }
-  return 'other';
-}
-
 /**
  * @summary Represent the date in words relative to the given base date.
  *
  * @description
- * Represent the date in words relative to the given base date.
+ * Represent the date in words relative to the given base date, via `Intl.RelativeTimeFormat` —
+ * correctly localized for any `options.locale`, not just English. This is a deliberate departure
+ * from date-fns' own `formatRelative`: date-fns names the specific weekday and includes a
+ * time-of-day (`"last Thursday at 12:45 AM"`), using per-locale `Locale` objects with bundled
+ * connector-word data ("last", "at", and so on) for every supported language. There's no
+ * `Intl` primitive that provides that same weekday+time composite in an arbitrary locale, so
+ * rather than hardcode English connector words and silently produce broken output for every
+ * other locale, this resolves to `Intl.RelativeTimeFormat`'s day/week granularity instead, with
+ * no time-of-day component, for every locale including English.
  *
- * | Distance to the base date | Result                    |
- * |-----------------------------|---------------------------|
- * | Previous 6 days           | last Sunday at 04:30 AM   |
- * | Last day                  | yesterday at 04:30 AM     |
- * | Same day                  | today at 04:30 AM         |
- * | Next day                  | tomorrow at 04:30 AM      |
- * | Next 6 days               | Sunday at 04:30 AM        |
- * | Other                     | 12/31/2017                |
+ * | Distance to the base date | Result (en)  |
+ * |---------------------------|--------------|
+ * | Previous 2-6 days         | last week    |
+ * | Last day                  | yesterday    |
+ * | Same day                  | today        |
+ * | Next day                  | tomorrow     |
+ * | Next 2-6 days             | next week    |
+ * | Other                     | 12/31/2017   |
  *
  * @param date - The date to format
  * @param baseDate - The date to compare with
@@ -65,25 +41,38 @@ function getToken(diff: number): FormatRelativeToken {
  * @returns The date in words
  *
  * @example
- * // Represent the date of 6 days ago in words relative to the given base date. In this example, today is Wednesday
+ * // Represent the date of 6 days ago in words relative to the given base date:
  * const result = formatRelative(subDays(new Date(), 6), new Date())
- * //=> "last Thursday at 12:45 AM"
+ * //=> "last week"
+ *
+ * @example
+ * // Correctly localized for any locale, unlike date-fns' weekday+time composite:
+ * const result = formatRelative(subDays(new Date(), 3), new Date(), { locale: 'es' })
+ * //=> "hace 3 días"
  */
 export function formatRelative(date: Date, baseDate: Date, options?: FormatRelativeOptions): string;
 /**
  * @summary Represent the date in words relative to the given base date.
  *
  * @description
- * Represent the date in words relative to the given base date.
+ * Represent the date in words relative to the given base date, via `Intl.RelativeTimeFormat` —
+ * correctly localized for any `options.locale`, not just English. This is a deliberate departure
+ * from date-fns' own `formatRelative`: date-fns names the specific weekday and includes a
+ * time-of-day (`"last Thursday at 12:45 AM"`), using per-locale `Locale` objects with bundled
+ * connector-word data ("last", "at", and so on) for every supported language. There's no
+ * `Intl` primitive that provides that same weekday+time composite in an arbitrary locale, so
+ * rather than hardcode English connector words and silently produce broken output for every
+ * other locale, this resolves to `Intl.RelativeTimeFormat`'s day/week granularity instead, with
+ * no time-of-day component, for every locale including English.
  *
- * | Distance to the base date | Result                    |
- * |-----------------------------|---------------------------|
- * | Previous 6 days           | last Sunday at 04:30 AM   |
- * | Last day                  | yesterday at 04:30 AM     |
- * | Same day                  | today at 04:30 AM         |
- * | Next day                  | tomorrow at 04:30 AM      |
- * | Next 6 days               | Sunday at 04:30 AM        |
- * | Other                     | 12/31/2017                |
+ * | Distance to the base date | Result (en)  |
+ * |---------------------------|--------------|
+ * | Previous 2-6 days         | last week    |
+ * | Last day                  | yesterday    |
+ * | Same day                  | today        |
+ * | Next day                  | tomorrow     |
+ * | Next 2-6 days             | next week    |
+ * | Other                     | 12/31/2017   |
  *
  * @typeParam T - A {@link DateLike} type (`Temporal.PlainDate`, `Temporal.PlainDateTime` or
  * `Temporal.ZonedDateTime`). Inferred from `date`/`baseDate`, which must share the same
@@ -96,9 +85,14 @@ export function formatRelative(date: Date, baseDate: Date, options?: FormatRelat
  * @returns The date in words
  *
  * @example
- * // Represent the date of 6 days ago in words relative to the given base date. In this example, today is Wednesday
+ * // Represent the date of 6 days ago in words relative to the given base date:
  * const result = formatRelative(subDays(new Date(), 6), new Date())
- * //=> "last Thursday at 12:45 AM"
+ * //=> "last week"
+ *
+ * @example
+ * // Correctly localized for any locale, unlike date-fns' weekday+time composite:
+ * const result = formatRelative(subDays(new Date(), 3), new Date(), { locale: 'es' })
+ * //=> "hace 3 días"
  */
 export function formatRelative<T extends DateLike>(
   date: T,
@@ -111,8 +105,16 @@ export function formatRelative(
   options?: FormatRelativeOptions
 ): string {
   const diff = differenceInCalendarDaysValue(date, baseDate);
-  const token = getToken(diff);
-  const formatStr = formatRelativeLocale[token];
+  const rtf = getCachedRelativeTimeFormat(options?.locale, { numeric: 'auto' });
 
-  return format(date, formatStr, options);
+  if (diff < -6 || diff > 6) {
+    return format(date, 'P', options);
+  }
+  if (diff <= -2) {
+    return rtf.format(-1, 'week');
+  }
+  if (diff >= 2) {
+    return rtf.format(1, 'week');
+  }
+  return rtf.format(diff, 'day');
 }

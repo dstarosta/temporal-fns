@@ -9,7 +9,7 @@ import { FormatDistanceOptions } from "./format-distance.js";
  * Return the distance between the given date and now in words.
  *
  * | Distance to now                                                   | Result              |
- * |---------------------------------------------------------------------|---------------------|
+ * |-------------------------------------------------------------------|---------------------|
  * | 0 ... 30 secs                                                     | less than a minute  |
  * | 30 secs ... 1 min 30 secs                                         | 1 minute            |
  * | 1 min 30 secs ... 44 mins 30 secs                                 | [2..44] minutes     |
@@ -29,7 +29,7 @@ import { FormatDistanceOptions } from "./format-distance.js";
  *
  * With `options.includeSeconds == true`:
  * | Distance to now     | Result               |
- * |-----------------------|----------------------|
+ * |---------------------|----------------------|
  * | 0 secs ... 5 secs   | less than 5 seconds  |
  * | 5 secs ... 10 secs  | less than 10 seconds |
  * | 10 secs ... 20 secs | less than 20 seconds |

@@ -1,9 +1,11 @@
 import { withDate } from './helpers/convert.js';
 import { type DateLike } from './types.js';
 
-// date-fns setYear (via JS Date#setFullYear) overflows into the next month
-// when the day doesn't exist in the target year (e.g. Feb 29 set to a
-// non-leap year becomes Mar 1), rather than clamping to Feb 28.
+// date-fns setYear (via JS Date#setFullYear) overflows into the next month when the day doesn't
+// exist in the target year (e.g. Feb 29 set to a non-leap year becomes Mar 1). temporal-fns
+// deliberately diverges here: it clamps to the target month's last valid day (Feb 28) instead,
+// via Temporal's default 'constrain' overflow on `.with()` — the same behavior setMonth already
+// has, so setYear and setMonth are now consistent with each other.
 /**
  * @summary Set the year to the given date.
  *
@@ -19,8 +21,7 @@ import { type DateLike } from './types.js';
  * @returns The new date with the year set
  */
 export function setYearValue<T extends DateLike>(date: T, year: number): T {
-  const firstOfMonth = date.with({ year, month: 1, day: 1 });
-  return firstOfMonth.add({ months: date.month - 1 }).add({ days: date.day - 1 }) as T;
+  return date.with({ year }) as T;
 }
 
 /**

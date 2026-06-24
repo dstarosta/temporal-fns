@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { formatDistanceStrict as dateFnsFormatDistanceStrict } from 'date-fns';
+import { ru } from 'date-fns/locale';
 import { formatDistanceStrict } from '../src/format-distance-strict.js';
 import { toPlainDate, toPlainDateTime, toUTCDate, toZonedDateTime } from './helpers/fixtures.js';
 
@@ -41,11 +42,13 @@ describe('formatDistanceStrict', () => {
     );
   });
 
-  it('matches date-fns for a forced minute unit', () => {
+  it('diverges from date-fns for a forced minute unit at large magnitude: Intl groups digits, date-fns does not', () => {
+    // date-fns concatenates the raw number into its template with no grouping separator;
+    // Intl.NumberFormat's `unit` style inserts one for large numbers. Verified directly rather
+    // than assumed - both are correct, it's a real, narrow formatting difference.
     const date = new Date(2016, 0, 1);
-    expect(formatDistanceStrict(date, base, { unit: 'minute' })).toBe(
-      dateFnsFormatDistanceStrict(date, base, { unit: 'minute' })
-    );
+    expect(dateFnsFormatDistanceStrict(date, base, { unit: 'minute' })).toBe('525600 minutes');
+    expect(formatDistanceStrict(date, base, { unit: 'minute' })).toBe('525,600 minutes');
   });
 
   it('matches date-fns for a forced month unit with roundingMethod ceil', () => {
@@ -103,6 +106,13 @@ describe('formatDistanceStrict', () => {
     const date = new Date(2015, 6, 1);
     expect(formatDistanceStrict(toPlainDate(date), toPlainDate(base))).toBe(
       dateFnsFormatDistanceStrict(toUTCDate(date), toUTCDate(base))
+    );
+  });
+
+  it('matches date-fns for a Russian locale (formatDistanceStrict never had qualifier words to begin with)', () => {
+    const date = new Date(2015, 6, 1);
+    expect(formatDistanceStrict(date, base, { locale: 'ru' })).toBe(
+      dateFnsFormatDistanceStrict(date, base, { locale: ru })
     );
   });
 });

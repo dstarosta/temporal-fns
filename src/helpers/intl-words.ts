@@ -40,6 +40,20 @@ export function formatToParts(
   );
 }
 
+// Same Date/PlainDate/PlainDateTime/ZonedDateTime handling as formatToParts, but returns the
+// final formatted string directly (e.g. for dateStyle/timeStyle-based formatting) instead of
+// parts - used by the P/p long-date/time tokens, which splice a single Intl-rendered string into
+// the output rather than reading one specific part out of it.
+export function formatWithIntl(
+  date: Date | DateLike,
+  locale: Intl.LocalesArgument,
+  options: Intl.DateTimeFormatOptions
+): string {
+  const { value, timeZone } = toFormattable(date);
+  // See the TypeScript-overload note on formatToParts above; the same gap applies here.
+  return getCachedDateTimeFormat(locale, { ...options, timeZone }).format(value as unknown as Date);
+}
+
 export function getWordPart(
   date: Date | DateLike,
   locale: Intl.LocalesArgument,

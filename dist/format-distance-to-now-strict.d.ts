@@ -11,7 +11,7 @@ import { FormatDistanceStrictOptions } from "./format-distance-strict.js";
  * 'less than' and the like.
  *
  * | Distance between dates | Result              |
- * |--------------------------|---------------------|
+ * |------------------------|---------------------|
  * | 0 ... 59 secs          | [0..59] seconds     |
  * | 1 ... 59 mins          | [1..59] minutes     |
  * | 1 ... 23 hrs           | [1..23] hours       |

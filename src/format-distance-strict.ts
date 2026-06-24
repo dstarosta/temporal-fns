@@ -1,5 +1,5 @@
 import { compare } from './helpers/compare.js';
-import { formatDistanceWords } from './helpers/format-distance-locale.js';
+import { formatRelativeUnit } from './helpers/format-distance-locale.js';
 import { toDstNormalizedMilliseconds } from './helpers/to-dst-normalized-milliseconds.js';
 import { toEpochMilliseconds } from './helpers/to-epoch-milliseconds.js';
 import { type DateLike } from './types.js';
@@ -14,6 +14,7 @@ export interface FormatDistanceStrictOptions {
   addSuffix?: boolean;
   unit?: FormatDistanceStrictUnit;
   roundingMethod?: FormatDistanceStrictRoundingMethod;
+  locale?: Intl.LocalesArgument;
 }
 
 const minutesInDay = 1440;
@@ -53,7 +54,7 @@ export function formatDistanceStrictValue(
   const [orderedLater, orderedEarlier] =
     comparison > 0 ? [earlierDate, laterDate] : [laterDate, earlierDate];
 
-  const localizeOptions = { addSuffix: options?.addSuffix, comparison };
+  const localizeOptions = { addSuffix: options?.addSuffix, comparison, locale: options?.locale };
 
   const milliseconds = toEpochMilliseconds(orderedEarlier) - toEpochMilliseconds(orderedLater);
   const minutes = milliseconds / 60_000;
@@ -80,28 +81,28 @@ export function formatDistanceStrictValue(
 
   if (unit === 'second') {
     const seconds = round(options?.roundingMethod, milliseconds / 1000);
-    return formatDistanceWords('xSeconds', seconds, localizeOptions);
+    return formatRelativeUnit('second', seconds, localizeOptions);
   }
   if (unit === 'minute') {
     const roundedMinutes = round(options?.roundingMethod, minutes);
-    return formatDistanceWords('xMinutes', roundedMinutes, localizeOptions);
+    return formatRelativeUnit('minute', roundedMinutes, localizeOptions);
   }
   if (unit === 'hour') {
     const hours = round(options?.roundingMethod, minutes / 60);
-    return formatDistanceWords('xHours', hours, localizeOptions);
+    return formatRelativeUnit('hour', hours, localizeOptions);
   }
   if (unit === 'day') {
     const days = round(options?.roundingMethod, dstNormalizedMinutes / minutesInDay);
-    return formatDistanceWords('xDays', days, localizeOptions);
+    return formatRelativeUnit('day', days, localizeOptions);
   }
   if (unit === 'month') {
     const months = round(options?.roundingMethod, dstNormalizedMinutes / minutesInMonth);
     return months === 12 && options?.unit !== 'month'
-      ? formatDistanceWords('xYears', 1, localizeOptions)
-      : formatDistanceWords('xMonths', months, localizeOptions);
+      ? formatRelativeUnit('year', 1, localizeOptions)
+      : formatRelativeUnit('month', months, localizeOptions);
   }
   const years = round(options?.roundingMethod, dstNormalizedMinutes / minutesInYear);
-  return formatDistanceWords('xYears', years, localizeOptions);
+  return formatRelativeUnit('year', years, localizeOptions);
 }
 
 /**
@@ -113,7 +114,7 @@ export function formatDistanceStrictValue(
  * 'less than' and the like.
  *
  * | Distance between dates | Result              |
- * |--------------------------|---------------------|
+ * |------------------------|---------------------|
  * | 0 ... 59 secs          | [0..59] seconds     |
  * | 1 ... 59 mins          | [1..59] minutes     |
  * | 1 ... 23 hrs           | [1..23] hours       |
@@ -155,7 +156,7 @@ export function formatDistanceStrict(
  * 'less than' and the like.
  *
  * | Distance between dates | Result              |
- * |--------------------------|---------------------|
+ * |------------------------|---------------------|
  * | 0 ... 59 secs          | [0..59] seconds     |
  * | 1 ... 59 mins          | [1..59] minutes     |
  * | 1 ... 23 hrs           | [1..23] hours       |

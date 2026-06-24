@@ -48,3 +48,8 @@ export const getCachedRelativeTimeFormat = createIntlCache(
   (locale: Intl.LocalesArgument, options: Intl.RelativeTimeFormatOptions) =>
     new Intl.RelativeTimeFormat(locale, options)
 );
+
+export const getCachedNumberFormat = createIntlCache(
+  (locale: Intl.LocalesArgument, options: Intl.NumberFormatOptions) =>
+    new Intl.NumberFormat(locale, options)
+);

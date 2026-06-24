@@ -1,4 +1,4 @@
-import { type FormatDistanceToken, formatDistanceWords } from './helpers/format-distance-locale.js';
+import { getCachedNumberFormat } from './helpers/intl-cache.js';
 
 /**
  * An object that represents a duration in years, months, weeks, days, hours, minutes and seconds.
@@ -22,6 +22,7 @@ export interface FormatDurationOptions {
   format?: FormatDurationUnit[];
   zero?: boolean;
   delimiter?: string;
+  locale?: Intl.LocalesArgument;
 }
 
 const defaultFormat: FormatDurationUnit[] = [
@@ -34,15 +35,31 @@ const defaultFormat: FormatDurationUnit[] = [
   'seconds',
 ];
 
-const tokenByUnit: Record<FormatDurationUnit, FormatDistanceToken> = {
-  years: 'xYears',
-  months: 'xMonths',
-  weeks: 'xWeeks',
-  days: 'xDays',
-  hours: 'xHours',
-  minutes: 'xMinutes',
-  seconds: 'xSeconds',
+// Intl.NumberFormat's `unit` option wants the singular identifier ('year', not 'years').
+const intlUnitByDurationUnit: Record<FormatDurationUnit, Intl.NumberFormatOptions['unit']> = {
+  years: 'year',
+  months: 'month',
+  weeks: 'week',
+  days: 'day',
+  hours: 'hour',
+  minutes: 'minute',
+  seconds: 'second',
 };
+
+// Renders "<count> <unit>" via Intl.NumberFormat's `unit` style instead of a hardcoded per-unit
+// word table: `style: 'unit'` natively pluralizes and genders the unit name correctly for any
+// locale (including irregular plural systems like Russian's 1/2-4/5+ three-way split, or
+// Arabic's zero-digit singular form), with zero bundled locale data. Uses .format() directly
+// (not formatToParts) because Intl's own number/unit ordering and separator - including locales
+// with no separator at all, like Japanese - is already correct; reconstructing it from parts
+// would mean re-deciding that separator ourselves instead of using the one Intl already chose.
+function formatUnit(unit: FormatDurationUnit, count: number, locale: Intl.LocalesArgument): string {
+  return getCachedNumberFormat(locale, {
+    style: 'unit',
+    unit: intlUnitByDurationUnit[unit],
+    unitDisplay: 'long',
+  }).format(count);
+}
 
 /**
  * @summary Formats a duration in human-readable format
@@ -104,12 +121,13 @@ export function formatDuration(duration: Duration, options?: FormatDurationOptio
   const format = options?.format ?? defaultFormat;
   const zero = options?.zero ?? false;
   const delimiter = options?.delimiter ?? ' ';
+  const locale = options?.locale;
 
   const parts: string[] = [];
   for (const unit of format) {
     const value = duration[unit];
     if (value !== undefined && (zero || value)) {
-      parts.push(formatDistanceWords(tokenByUnit[unit], value));
+      parts.push(formatUnit(unit, value, locale));
     }
   }
 

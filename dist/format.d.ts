@@ -33,7 +33,7 @@ interface FormatOptions extends LocalWeekOptions {
  *
  * Accepted patterns:
  * | Unit                            | Pattern | Result examples                   | Notes |
- * |----------------------------------|---------|------------------------------------|-------|
+ * |---------------------------------|---------|-----------------------------------|-------|
  * | Era                             | G..GGG  | AD, BC                            |       |
  * |                                 | GGGG    | Anno Domini, Before Christ        | 2     |
  * |                                 | GGGGG   | A, B                              |       |
@@ -181,10 +181,10 @@ interface FormatOptions extends LocalWeekOptions {
  * |                                 | pp      | 12:00:00 AM                       | 7     |
  * |                                 | ppp     | 12:00:00 AM GMT+2                 | 7     |
  * |                                 | pppp    | 12:00:00 AM GMT+02:00             | 2,7   |
- * | Combination of date and time    | Pp      | 04/29/1453, 12:00 AM              | 7     |
- * |                                 | PPpp    | Apr 29, 1453, 12:00:00 AM         | 7     |
- * |                                 | PPPppp  | April 29th, 1453 at ...           | 7     |
- * |                                 | PPPPpppp| Friday, April 29th, 1453 at ...   | 2,7   |
+ * | Combination of date and time    | Pp      | 4/29/13, 12:00 AM                 | 7     |
+ * |                                 | PPpp    | Apr 29, 2013, 12:00:00 AM         | 7     |
+ * |                                 | PPPppp  | April 29th, 2013 at ...           | 7     |
+ * |                                 | PPPPpppp| Friday, April 29th, 2013 at ...   | 2,7   |
  *
  * Notes:
  * 1. "Formatting" units (e.g. formatting quarter) in the default en-US locale

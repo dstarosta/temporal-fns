@@ -19,6 +19,7 @@ interface FormatDurationOptions {
   format?: FormatDurationUnit[];
   zero?: boolean;
   delimiter?: string;
+  locale?: Intl.LocalesArgument;
 }
 /**
  * @summary Formats a duration in human-readable format

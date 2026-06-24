@@ -1,0 +1,910 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>temporal-fns — Developer Guide</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    />
+    <link rel="stylesheet" href="lib/prism-tomorrow.min.css" />
+    <link rel="stylesheet" href="guide.css" />
+    <script src="lib/prism-core.min.js" data-manual></script>
+    <script src="lib/prism-autoloader.min.js"></script>
+  </head>
+  <body>
+    <header>
+      <a href="/temporal-fns/" class="logo">temporal<span>-fns</span></a>
+      <span class="version-badge">v1</span>
+      <a
+        href="https://github.com/dstarosta/temporal-fns"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="github-link"
+        aria-label="GitHub"
+      >
+        <svg height="20" width="20" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+          <path
+            d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8"
+          />
+        </svg>
+      </a>
+    </header>
+    <div class="layout">
+      <nav id="sidebar">
+        <div class="nav-section">
+          <span class="nav-section-label">Getting Started</span>
+          <a href="#overview" class="nav-link active">Overview</a>
+          <a href="#installation" class="nav-link">Installation</a>
+          <a href="#philosophy" class="nav-link">Philosophy</a>
+          <a href="#differences-from-date-fns" class="nav-link">Differences from date-fns</a>
+          <a href="#bugs" class="nav-link">Bugs</a>
+          <a href="#performance" class="nav-link">Performance</a>
+          <a href="#size" class="nav-link">Size</a>
+        </div>
+        <div class="nav-section">
+          <span class="nav-section-label">Examples</span>
+          <a href="#example-format-date" class="nav-link">Format date</a>
+          <a href="#example-i18n" class="nav-link">I18n</a>
+          <a href="#example-composition-fp" class="nav-link">Composition &amp; FP</a>
+          <a href="#example-arithmetic-comparison" class="nav-link">Arithmetic &amp; Comparison</a>
+          <a href="#example-intervals" class="nav-link">Intervals</a>
+          <a href="#example-temporal-types" class="nav-link">Temporal Types</a>
+          <a href="#example-timezones" class="nav-link">Time Zones</a>
+        </div>
+      </nav>
+      <main>
+        <section class="section" id="overview">
+          <div class="section-eyebrow">Getting Started</div>
+          <h1>temporal-fns Guide</h1>
+          <p>
+            <strong
+              >temporal-fns is a date utility library with the same functions you already know from
+              date-fns — but built on <code>Temporal</code> instead of <code>Date</code>.</strong
+            >
+          </p>
+          <p>
+            JavaScript's built-in <code>Date</code> has some well-known rough edges: it's mutable,
+            timezones are awkward, and months are zero-indexed. <code>Temporal</code> is the new
+            built-in API that fixes all of that. The only catch is that it has a different API, so
+            switching means rewriting how you work with dates.
+          </p>
+          <p>
+            temporal-fns solves that by giving you the same function names you'd use in date-fns —
+            <code>addDays</code>, <code>compareAsc</code>, <code>differenceInCalendarDays</code>,
+            <code>eachDayOfInterval</code>, and so on — except they take and return
+            <code>Temporal</code> values. You get the familiar API and the better date engine
+            underneath.
+          </p>
+          <p>Why use it:</p>
+          <ul>
+            <li>
+              <strong>Feels like date-fns</strong> — same function names, same arguments. If you've
+              used date-fns before, you already know most of this API.
+            </li>
+            <li>
+              <strong>No <code>Date</code> footguns</strong> — values are immutable, timezones are
+              explicit, and months are numbered the way you'd expect (January is 1, not 0).
+            </li>
+            <li>
+              <strong>Import only what you use</strong> — every function is also its own package
+              entry point, so your bundle only includes the functions you actually call.
+            </li>
+            <li>
+              <strong>Handles the hard parts for you</strong> — daylight saving time, leap years,
+              and months of different lengths are handled correctly because <code>Temporal</code>
+              handles them correctly.
+            </li>
+            <li>
+              <strong>Typed</strong> — written in TypeScript, so your editor knows what each
+              function expects and returns.
+            </li>
+          </ul>
+        </section>
+        <section class="section" id="installation">
+          <div class="section-eyebrow">Getting Started</div>
+          <h2>Installation</h2>
+          <div class="callout callout-info">
+            <div class="callout-label">Requirements</div>
+            <p>
+              You'll need
+              <strong
+                ><a
+                  href="https://www.typescriptlang.org/download/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="typescript-link"
+                  >TypeScript 5.9+</a
+                ></strong
+              >
+              and a runtime that supports <code>Temporal</code> — that's the latest
+              Chrome/Edge/Firefox, or Node.js 26+.
+            </p>
+          </div>
+          <div class="code-block">
+            <div class="code-block-header"><span class="code-block-lang">bash</span></div>
+            <pre><code class="language-bash">npm install temporal-fns</code></pre>
+          </div>
+          <p>Then import whatever functions you need, just like you would with date-fns:</p>
+          <div class="code-block">
+            <div class="code-block-header"><span class="code-block-lang">typescript</span></div>
+            <pre><code class="language-typescript">import { addDays, compareAsc } from 'temporal-fns';</code></pre>
+          </div>
+          <p>
+            If you want your bundler to include only the functions you actually use, import each one
+            from its own subpath instead:
+          </p>
+          <div class="code-block">
+            <div class="code-block-header"><span class="code-block-lang">typescript</span></div>
+            <pre><code class="language-typescript">import { addDays } from 'temporal-fns/add-days';
+import { compareAsc } from 'temporal-fns/compare-asc';</code></pre>
+          </div>
+          <div class="callout callout-warning">
+            <div class="callout-label">No native Temporal?</div>
+            <p>
+              We recommend targeting an environment with native <code>Temporal</code> support rather
+              than relying on a polyfill — polyfills can't fully replicate the spec and aren't
+              guaranteed to behave correctly in every case. If you have no other option,
+              <code>@js-temporal/polyfill</code> is the most complete one available, but treat it as
+              a stopgap, not a long-term solution.
+            </p>
+          </div>
+        </section>
+        <section class="section" id="philosophy">
+          <div class="section-eyebrow">Getting Started</div>
+          <h2>Philosophy</h2>
+          <p>
+            <code>Date</code> has been a known source of bugs for as long as JavaScript has had it.
+            Months are zero-indexed, for one. Timezone handling is the deeper problem — a
+            <code>Date</code> is just a UTC timestamp plus whatever offset the
+            <em>current</em> system zone happens to report for it. It can carry an offset like
+            <code>+02:00</code>, but an offset isn't a zone: several IANA zones share the same
+            offset at any given moment, and the same zone's own offset changes across a DST
+            transition. A <code>Date</code> has no memory of which zone it was actually meant to
+            represent — only of the instant itself.
+          </p>
+          <p>
+            <code>Date</code> is also mutable, and the methods that change it (<code>setDate</code>,
+            <code>setHours</code>, and the rest) mutate in place rather than returning a new
+            instance. Pass a <code>Date</code> into a function, and that function can change the
+            caller's copy without anyone intending it to — there's no way to hand out a
+            <code>Date</code> and be sure it'll still hold the same value later. This is the kind of
+            bug that's easy to introduce and hard to track down, since the mutation can happen far
+            from where the value is read.
+          </p>
+          <p>
+            <code>Temporal</code> is the language's answer to all of this — immutable values, sane
+            calendar fields, and explicit zone-aware types (<code>PlainDate</code>,
+            <code>PlainDateTime</code>, <code>ZonedDateTime</code>) that make timezone handling
+            something you opt into rather than something you can silently get wrong. temporal-fns
+            exists to make moving from <code>Date</code> to <code>Temporal</code> a small change
+            instead of a rewrite, while also fixing the rough edges that date-fns and its companion
+            packages have accumulated over time.
+          </p>
+          <h3>1. Drop-in compatible with date-fns</h3>
+          <p>
+            If you're coming from date-fns, almost everything carries over directly — same function
+            names, same arguments, same behavior, just operating on
+            <code>Temporal</code> values instead of <code>Date</code>. This includes
+            <code>date-fns-tz</code>, not just date-fns core — between the two, temporal-fns
+            implements every function except <code>constructFrom</code> (a low-level internal
+            helper) and <code>transpose</code>, putting compatibility at <strong>~99%</strong>. See
+            <a href="#differences-from-date-fns">Differences from date-fns</a> for the full list and
+            the reasoning behind each one.
+          </p>
+          <h3>2. One library instead of several</h3>
+          <p>
+            With date-fns, timezone support and some interval helpers end up living in separate
+            packages and mental models. temporal-fns folds all of that into one library:
+          </p>
+          <ul>
+            <li>
+              Works with every <code>Temporal</code> type — <code>PlainDate</code>,
+              <code>PlainDateTime</code>, <code>PlainTime</code>, <code>PlainYearMonth</code>, and
+              <code>ZonedDateTime</code>. <code>Date</code> is also fully supported everywhere and
+              is noticeably faster, since it skips the <code>Temporal</code> conversion overhead —
+              but the <code>Temporal</code> types give you immutability and unambiguous timezone
+              handling that <code>Date</code> can't. Use whichever fits your case; the function you
+              call stays the same either way.
+            </li>
+            <li>
+              Timezones are built in, the way <code>date-fns-tz</code> bolts them on for date-fns.
+            </li>
+            <li>
+              A handful of extra interval methods inspired by Luxon's <code>Interval</code> class
+              (set operations like intersecting or subtracting intervals) are included natively.
+            </li>
+            <li>Several long-standing date-fns bugs are fixed rather than carried over.</li>
+          </ul>
+          <p>
+            See <a href="#bugs">Bugs</a>, <a href="#performance">Performance</a>, and
+            <a href="#size">Size</a> for the details and the bugs we found and fixed along the way.
+          </p>
+          <h3>3. No dependencies</h3>
+          <p>
+            temporal-fns has zero runtime dependencies. It relies on the native
+            <code>Temporal</code> object and nothing else — no transitive packages, no surprise
+            version bumps, no supply-chain surface beyond temporal-fns itself.
+          </p>
+        </section>
+        <section class="section" id="differences-from-date-fns">
+          <div class="section-eyebrow">Getting Started</div>
+          <h2>Differences from date-fns</h2>
+          <p>
+            Every commonly used function in date-fns and <code>date-fns-tz</code> has a temporal-fns
+            equivalent with the <strong>same name and the same signature</strong> — you import it
+            from temporal-fns instead of date-fns, and pass it a <code>Temporal</code> value (or a
+            plain <code>Date</code>, which is also fully supported) instead of a <code>Date</code>.
+            There are exactly two exceptions, and both are skipped on purpose rather than left out
+            by oversight.
+          </p>
+          <h3>constructFrom and transpose</h3>
+          <p>
+            <code>constructFrom(date, value)</code> and
+            <code>transpose(date, constructor)</code> exist in date-fns as a generic construction
+            mechanism: they let date-fns' own functions build a result using whatever
+            <code>Date</code> subclass the input came from, rather than hard-coding
+            <code>Date</code>. This is how extensions like <code>@date-fns/utc</code>'s
+            <code>UTCDate</code> or <code>@date-fns/tz</code>'s <code>TZDate</code> work — they
+            subclass <code>Date</code>, and <code>constructFrom</code> calls
+            <code>new date.constructor(value)</code> to produce another instance of that same
+            subclass.
+          </p>
+          <p>
+            That mechanism doesn't carry over to <code>Temporal</code>, and not just as a matter of
+            taste — it's a real construction mismatch:
+          </p>
+          <ul>
+            <li>
+              <code>Temporal.PlainDate</code>, <code>PlainDateTime</code>, and
+              <code>ZonedDateTime</code> are not subclasses of <code>Date</code>, so there's no
+              shared constructor contract for <code>constructFrom</code> to dispatch through in the
+              first place.
+            </li>
+            <li>
+              <code>constructFrom</code>'s whole contract assumes a constructor that takes
+              <strong>one</strong> value — a timestamp. <code>Temporal.PlainDate</code>'s
+              constructor takes year, month, and day as three separate required arguments. Calling
+              it the way <code>constructFrom</code> calls <code>Date</code> —
+              <code>new Temporal.PlainDate(value)</code> — throws a
+              <code>RangeError</code> immediately, because <code>month</code> and
+              <code>day</code> are missing. There's no way to make the two contracts line up; one
+              constructor takes a single timestamp, the other requires three calendar fields.
+            </li>
+            <li>
+              <code>transpose</code> builds on the same pattern and then mutates the result with
+              <code>setFullYear</code>/<code>setHours</code>. <code>Temporal</code> values are
+              immutable, so even setting aside the construction mismatch above, there's no
+              equivalent in-place step to port.
+            </li>
+          </ul>
+          <p>
+            In short: porting these two as-is wouldn't just be extra work, it would reintroduce the
+            exact class of silent-wrong-value bug that switching to <code>Temporal</code> is meant
+            to eliminate. See <a href="#bugs">Bugs</a> for other cases where date-fns'
+            <code>Date</code>-based design produces incorrect results that
+            <code>Temporal</code> avoids by construction, and
+            <a href="#performance">Performance</a> for how the <code>Date</code> fast paths
+            temporal-fns uses instead compare in speed.
+          </p>
+          <h3>A few functions render slightly different text</h3>
+          <p>
+            date-fns ships hand-written English text for a handful of functions — words like
+            "about", "last", and "at" baked directly into the output. temporal-fns generates that
+            text through <code>Intl</code> instead, so it comes out correct in any locale — but for
+            a few functions, that means the English text itself reads a little differently too. Some
+            common examples:
+          </p>
+          <div class="code-block">
+            <div class="code-block-header"><span class="code-block-lang">typescript</span></div>
+            <pre><code class="language-typescript">formatRelative(sixDaysAgo, now);
+// date-fns:      "last Thursday at 1:40 PM"
+// temporal-fns:  "last week"
+
+formatDistance(oneYearAgo, now);
+// date-fns:      "about 1 year"
+// temporal-fns:  "1 year"
+
+format(date, 'P');
+// date-fns:      "06/19/2026"
+// temporal-fns:  "6/19/26"  (matches Temporal.PlainDate's own toLocaleString)
+// Want "06/19/2026" instead? format(date, 'MM/dd/yyyy') gives that directly.</code></pre>
+          </div>
+        </section>
+        <section class="section" id="bugs">
+          <div class="section-eyebrow">Getting Started</div>
+          <h2>Bugs</h2>
+          <p>
+            While porting date-fns function by function, we ran every function's test suite against
+            the real, installed date-fns package as a parity check. Six cases turned up where
+            temporal-fns and date-fns deliberately disagree — not because of a translation mistake,
+            but because we found a genuine bug in date-fns itself and chose to fix it rather than
+            carry it over. Each one is demonstrated by a test that diffs
+            <strong>real</strong> date-fns output against temporal-fns, not just an assertion of the
+            "correct" value in isolation.
+          </p>
+          <h3>1. formatISODuration silently drops weeks</h3>
+          <p>
+            date-fns' <code>Duration</code> type declares <code>weeks?: number</code>, and
+            <code>formatISODuration</code> accepts a <code>Duration</code> — but its output template
+            never references <code>weeks</code> at all. Every other field renders; weeks is the one
+            silent exception.
+          </p>
+          <div class="code-block">
+            <div class="code-block-header"><span class="code-block-lang">typescript</span></div>
+            <pre><code class="language-typescript">import { formatISODuration as dateFnsFormatISODuration } from 'date-fns';
+import { formatISODuration } from 'temporal-fns';
+
+dateFnsFormatISODuration({ years: 1, weeks: 2, days: 3 });
+//=> 'P1Y0M3DT0H0M0S'   (the 2 weeks vanished)
+
+formatISODuration({ years: 1, weeks: 2, days: 3 });
+//=> 'P1Y0M2W3DT0H0M0S'  (weeks included)</code></pre>
+          </div>
+          <h3>2. Unit converters silently round to <code>-0</code></h3>
+          <p>
+            Nine of date-fns' unit-conversion helpers (<code>monthsToYears</code>,
+            <code>millisecondsToHours</code>, <code>secondsToMinutes</code>, and six others) use
+            <code>Math.trunc()</code> to convert between units. For small negative inputs,
+            <code>Math.trunc()</code> produces <code>-0</code> instead of <code>0</code> — and only
+            one of the nine (<code>daysToWeeks</code>) happens to guard against it.
+          </p>
+          <div class="code-block">
+            <div class="code-block-header"><span class="code-block-lang">typescript</span></div>
+            <pre><code class="language-typescript">import { monthsToYears as dateFnsMonthsToYears } from 'date-fns';
+import { monthsToYears } from 'temporal-fns';
+
+Object.is(dateFnsMonthsToYears(-1), -0); //=> true   (looks like 0, but isn't)
+Object.is(monthsToYears(-1), -0); //=> false  (returns 0)</code></pre>
+          </div>
+          <h3>3. Narrow "noon" token parses to midnight</h3>
+          <p>
+            date-fns' <code>parse</code> matches day-period text (am/pm/noon/midnight) against a
+            lookup table. For the narrow width
+            (<code>BBBBB</code>/<code>bbbbb</code>/<code>aaaaa</code>), the documented and
+            self-produced narrow form for noon is the single letter <code>'n'</code> — but the
+            parser's own regex for matching it is <code>/^no/i</code>, which doesn't match a lone
+            <code>'n'</code>. The lookup silently fails and falls through to the default case:
+            midnight.
+          </p>
+          <div class="code-block">
+            <div class="code-block-header"><span class="code-block-lang">typescript</span></div>
+            <pre><code class="language-typescript">import { parse as dateFnsParse } from 'date-fns';
+import { parse } from 'temporal-fns';
+
+const reference = new Date(2020, 0, 1);
+dateFnsParse('n', 'BBBBB', reference).getHours(); //=> 0   (midnight, wrong)
+parse('n', 'BBBBB', reference).getHours(); //=> 12  (noon, correct)</code></pre>
+          </div>
+          <h3>4. differenceInBusinessDays isn't antisymmetric across time zones</h3>
+          <p>
+            A correct difference function should satisfy <code>f(a, b) === -f(b, a)</code> always.
+            date-fns' <code>differenceInBusinessDays</code> (with <code>@date-fns/tz</code>'s
+            <code>TZDate</code>) doesn't, when the two dates carry different IANA zones. Its
+            day-by-day counting loop is seeded from whichever argument is "earlier," and that
+            argument's <em>own embedded time zone</em> drives the whole walk — so swapping which
+            date is "earlier" silently swaps which zone's calendar the count uses.
+          </p>
+          <div class="code-block">
+            <div class="code-block-header"><span class="code-block-lang">typescript</span></div>
+            <pre><code class="language-typescript">import { differenceInBusinessDays as dateFnsDifferenceInBusinessDays } from 'date-fns';
+import { differenceInBusinessDays } from 'temporal-fns';
+import { TZDate } from '@date-fns/tz';
+
+const ny = new TZDate(2026, 4, 15, 20, 0, 0, 'America/New_York');
+const sg = new TZDate(2026, 4, 12, 0, 0, 0, 'Asia/Singapore');
+
+dateFnsDifferenceInBusinessDays(ny, sg); //=> 4
+dateFnsDifferenceInBusinessDays(sg, ny); //=> -3
+// 4 + -3 !== 0, not antisymmetric
+
+const nyZone = 'America/New_York';
+const sgZone = 'Asia/Singapore';
+const nyZoned = Temporal.ZonedDateTime.from(`2026-05-15T20:00:00-04:00[${nyZone}]`);
+const sgZoned = Temporal.ZonedDateTime.from(`2026-05-12T00:00:00+08:00[${sgZone}]`);
+
+differenceInBusinessDays(nyZoned, sgZoned); //=> 3
+differenceInBusinessDays(sgZoned, nyZoned); //=> -3   (correctly antisymmetric)
+
+// date-fns: magnitude 4 one way, 3 the other way - inconsistent
+// temporal-fns: magnitude 3 both ways - consistent</code></pre>
+          </div>
+          <p>
+            <strong>How Temporal helped:</strong> this is the one bug where
+            <code>Temporal</code> itself is the fix, not just an opportunity to notice the bug while
+            porting. temporal-fns converts both arguments to their own
+            <code>Temporal.PlainDate</code> — each read in its own zone — <em>before</em> the
+            day-counting walk starts. Once both inputs are reduced to a zone-independent type,
+            there's no embedded zone left for the walk to pick up; the order you pass the two
+            arguments in can no longer change which calendar the counting happens against. The bug
+            exists in date-fns precisely because <code>Date</code>/<code>TZDate</code> carry zone
+            information on the instance that downstream code can accidentally key off of —
+            <code>Temporal.PlainDate</code> has no zone to carry, so the whole bug class is
+            structurally impossible.
+          </p>
+          <h3>5. intervalToDuration silently drops weeks too</h3>
+          <p>
+            The same <code>Duration.weeks</code> gap from bug #1 shows up a second time, in a
+            different function. <code>intervalToDuration</code>'s day-by-day decomposition goes
+            years → months → days → hours → minutes → seconds — it never reports weeks, no matter
+            how many full weeks the remainder spans.
+          </p>
+          <div class="code-block">
+            <div class="code-block-header"><span class="code-block-lang">typescript</span></div>
+            <pre><code class="language-typescript">import { intervalToDuration as dateFnsIntervalToDuration } from 'date-fns';
+import { intervalToDuration } from 'temporal-fns';
+
+const start = new Date(2014, 8, 1, 10, 19, 50);
+const end = new Date(2017, 5, 15, 15, 29, 20);
+
+dateFnsIntervalToDuration({ start, end });
+//=> { years: 2, months: 9, days: 14, hours: 5, minutes: 9, seconds: 30 }
+
+intervalToDuration({ start, end });
+//=> { years: 2, months: 9, weeks: 2, hours: 5, minutes: 9, seconds: 30 }</code></pre>
+          </div>
+          <h3>6. setYear overflows into the next month on Feb 29</h3>
+          <p>
+            date-fns' <code>setYear</code> goes through native <code>Date#setFullYear</code>, which
+            rolls over into the next month when the target year doesn't have the requested day —
+            setting the year on Feb 29 to a non-leap year lands on March 1, not a clamped Feb 28.
+            Notably, date-fns' own <code>setMonth</code> doesn't have this problem; it clamps
+            correctly. Only <code>setYear</code> was inconsistent with it.
+          </p>
+          <div class="code-block">
+            <div class="code-block-header"><span class="code-block-lang">typescript</span></div>
+            <pre><code class="language-typescript">import { setYear as dateFnsSetYear } from 'date-fns';
+import { setYear } from 'temporal-fns';
+
+dateFnsSetYear(new Date(2024, 1, 29), 2030); //=> Mar 1 2030  (overflowed)
+setYear(new Date(2024, 1, 29), 2030); //=> Feb 28 2030 (clamped)</code></pre>
+          </div>
+          <p>
+            <strong>How Temporal helped:</strong> this is where <code>Temporal</code> made the fix
+            nearly free. <code>Temporal</code>'s <code>.with()</code> defaults to
+            <code>overflow: 'constrain'</code> — clamping out-of-range fields instead of rolling
+            them over — so setting just the year is a single <code>date.with({ year })</code> call,
+            with no month-by-month walk required. date-fns' own implementation, by contrast, calls a
+            native <code>Date</code> method whose overflow-by-rollover behavior it has no way to opt
+            out of.
+          </p>
+          <p>
+            See <a href="#differences-from-date-fns">Differences from date-fns</a> for the two cases
+            where we judged a date-fns construction pattern as fundamentally incompatible with
+            <code>Temporal</code> rather than fixable.
+          </p>
+        </section>
+        <section class="section" id="performance">
+          <div class="section-eyebrow">Getting Started</div>
+          <h2>Performance</h2>
+          <p>
+            For <code>Date</code> input — the case most migrating users hit first — temporal-fns is
+            <strong>faster than date-fns</strong>, not just comparably fast. For
+            <code>Temporal</code>-typed input, the picture depends heavily on the function and the
+            JS engine, since native <code>Temporal</code> support is still new and engines are at
+            different points in optimizing it.
+          </p>
+          <div class="callout callout-info">
+            <div class="callout-label">Snapshot, not a permanent ceiling</div>
+            <p>
+              The numbers below are a point-in-time benchmark measured 2026-06-23, against Node
+              26.3.1 (V8), Chromium 149 (V8), and Firefox 151 (SpiderMonkey), and date-fns 4.4.0 /
+              date-fns-tz 3.2.0. <code>Temporal</code> is a genuinely new engine feature — expect
+              these numbers, especially the <code>Temporal</code>-typed columns, to shift as engines
+              invest more in <code>Temporal</code>-specific optimizations. Re-benchmark against your
+              own target environment if performance is a hard requirement.
+            </p>
+          </div>
+          <h3>Date input: faster than date-fns on every tested engine</h3>
+          <p>
+            Five common operations (<code>format</code>, <code>parse</code>, <code>addDays</code>,
+            <code>compareAsc</code>, <code>eachDayOfInterval</code> over a 365-day range) were
+            benchmarked with <code>Date</code> input against the real, installed date-fns package,
+            using <code>tinybench</code> (Node) and an identical methodology under Playwright for
+            Chrome and Firefox — same fixtures, same iteration counts, same median-of-7-samples
+            timer.
+          </p>
+          <div class="code-block">
+            <div class="code-block-header"><span class="code-block-lang">typescript</span></div>
+            <pre><code class="language-typescript">// Total time for format + parse + addDays + compareAsc + eachDayOfInterval,
+// summed across all 5 calls, Date input only:
+//
+//                 date-fns  temporal-fns  % of date-fns
+// Node (V8)     169,868 ns    97,251 ns          57.3%
+// Chrome (V8)   150,600 ns    78,404 ns          52.1%
+// Firefox       111,320 ns    94,458 ns          84.9%</code></pre>
+          </div>
+          <p>
+            temporal-fns' <code>Date</code>-input total comes out to roughly half to five-sixths of
+            date-fns' time, depending on the engine — a real, measured win on every engine tested,
+            not a single-engine fluke. The two functions doing the most work (<code>addDays</code>
+            and <code>eachDayOfInterval</code>'s internal comparisons) have a fast path that
+            operates on <code>Date</code> directly instead of round-tripping through
+            <code>Temporal</code> for every call.
+          </p>
+          <h3>
+            <code>Temporal</code>-typed input: correctness has a cost, and it's engine-dependent
+          </h3>
+          <p>
+            Passing a <code>Temporal.PlainDate</code>, <code>PlainDateTime</code>, or
+            <code>ZonedDateTime</code> instead of a <code>Date</code> is slower for arithmetic-heavy
+            operations, because those go through real <code>Temporal.*.prototype.add()</code>/<code
+              >.with()</code
+            >
+            calls — that's the inherent cost of calendar-correct, immutable arithmetic, not a
+            temporal-fns inefficiency on top of it. How much slower varies a lot by engine:
+          </p>
+          <ul>
+            <li>
+              In V8 (Node and Chrome), <code>Temporal</code>-typed totals for the same 5-function
+              benchmark run about <strong>10–20x</strong> the <code>Date</code> total.
+            </li>
+            <li>
+              In Firefox/SpiderMonkey, the same comparison is only about
+              <strong>1.7–3.3x</strong> the <code>Date</code> total — SpiderMonkey's
+              <code>Temporal</code> implementation is currently more optimized relative to its own
+              engine baseline.
+            </li>
+            <li>
+              <code>ZonedDateTime</code> is consistently the most expensive of the three
+              <code>Temporal</code> types in every engine, since it resolves a real IANA
+              timezone/offset on top of the date math. <code>PlainDate</code> is consistently the
+              cheapest, since it has the fewest fields to handle.
+            </li>
+          </ul>
+          <p>
+            The size of that gap is the more interesting number than either side of it on its own.
+            V8 and SpiderMonkey are running the exact same <code>Temporal</code> operations, on the
+            same benchmark, and landing 5–10x apart from each other — that's not
+            <code>Temporal</code> itself being slow, it's a difference in how much JIT optimization
+            work each engine has put into its <code>Temporal</code> implementation so far.
+            SpiderMonkey's result is a working proof that <code>Temporal</code>-typed arithmetic
+            doesn't have to cost 10–20x a <code>Date</code> equivalent; V8 closing that gap looks
+            like an engineering and prioritization question for V8, not a ceiling
+            <code>Temporal</code> itself imposes. <code>Date</code> got the same multi-decade
+            optimization investment (inline caching, shape specialization) that
+            <code>Temporal</code> is only starting to receive now — expect this gap to narrow as
+            engines catch up, the same way it already has in Firefox.
+          </p>
+          <p>
+            The four timezone functions ported from
+            <code>date-fns-tz</code> (<code>getTimezoneOffset</code>, <code>toZonedTime</code>,
+            <code>fromZonedTime</code>, <code>formatInTimeZone</code>) don't follow this pattern —
+            temporal-fns wins on all four, on every engine, by 2–13x, for <em>any</em> input type:
+          </p>
+          <div class="code-block">
+            <div class="code-block-header"><span class="code-block-lang">typescript</span></div>
+            <pre><code class="language-typescript">// date-fns-tz -> temporal-fns, Date input (Node):
+//
+// getTimezoneOffset  9,033 ns ->  1,418 ns  (6.4x)
+// toZonedTime        5,197 ns ->  1,917 ns  (2.7x)
+// fromZonedTime      9,694 ns ->  1,785 ns  (5.4x)
+// formatInTimeZone  92,998 ns -> 44,008 ns  (2.1x)</code></pre>
+          </div>
+          <p>
+            These four are faster across the board because <code>date-fns-tz</code> hand-rolls its
+            own offset-parsing and DST-hole-fixup logic, where temporal-fns just asks
+            <code>Temporal.ZonedDateTime</code> to resolve the offset — DST transitions and gaps are
+            handled natively, with no manual fixup loop required. Unlike the arithmetic functions
+            above, <code>Temporal</code>-typed input costs about the same as <code>Date</code> input
+            here, since all four immediately convert to an instant/epoch-milliseconds internally
+            regardless of what type came in.
+          </p>
+          <p>
+            See <a href="#bugs">Bugs</a> for the correctness fixes found along the way, and
+            <a href="#size">Size</a> for how the same design choices affect bundle weight.
+          </p>
+        </section>
+        <section class="section" id="size">
+          <div class="section-eyebrow">Getting Started</div>
+          <h2>Size</h2>
+          <p>
+            For the common case — importing a handful of functions, not the whole library —
+            temporal-fns is exactly as tree-shakable as date-fns, and just as small. Importing
+            everything is a closer comparison, because temporal-fns folds in capability that
+            date-fns spreads across two packages.
+          </p>
+          <div class="callout callout-info">
+            <div class="callout-label">Snapshot, not a permanent ceiling</div>
+            <p>
+              Measured 2026-06-23 via real <code>esbuild --bundle --minify</code> output (not raw
+              file sizes), against date-fns 4.4.0 and date-fns-tz 3.2.0. Re-measure against your own
+              bundler and dependency versions if exact byte counts matter for your build.
+            </p>
+          </div>
+          <h3>Per-function import: same as date-fns</h3>
+          <p>
+            Most consumers import a handful of functions, not the entire library. Bundled and
+            minified via esbuild, temporal-fns produces byte-identical output whether you import
+            from the package root or a direct subpath — confirming tree-shaking works end to end —
+            and stays just as small as the date-fns equivalent:
+          </p>
+          <div class="code-block">
+            <div class="code-block-header"><span class="code-block-lang">typescript</span></div>
+            <pre><code class="language-typescript">// Minified / gzipped, esbuild --bundle --minify:
+//
+// addDays alone                     763 B /   ~415 B
+// addDays + isWithinInterval      1,447 B /   ~613 B
+// format alone (heaviest single) 11,371 B / ~3,780 B</code></pre>
+          </div>
+          <p>
+            The sub-1KB result holds for arithmetic/comparison/predicate-class functions like
+            <code>addDays</code> or <code>isWithinInterval</code>, whether imported from the package
+            root (<code>from 'temporal-fns'</code>) or a direct subpath (<code
+              >from 'temporal-fns/add-days'</code
+            >) — both produce identical bytes. It doesn't extend to <code>Intl</code>-backed
+            functions like <code>format</code>/<code>parse</code>, which carry real weight
+            regardless of how few functions you import alongside them — date-fns has the same
+            characteristic for the same reason.
+          </p>
+          <h3>Whole-library import: slightly larger, because it does more</h3>
+          <p>
+            Importing the entire public API is a less realistic case, but it's where the size
+            comparison gets interesting, because date-fns alone doesn't cover everything
+            temporal-fns covers out of the box. To match date-fns-tz's timezone functions and a
+            useful subset of Luxon's interval-algebra operations using only date-fns, you'd need
+            three things, not one: date-fns core, the separate <code>date-fns-tz</code> package, and
+            your own hand-written set-algebra helpers on top of <code>Interval</code>'s plain
+            <code>{ start, end }</code> object, since neither date-fns package provides them.
+          </p>
+          <div class="code-block">
+            <div class="code-block-header"><span class="code-block-lang">typescript</span></div>
+            <pre><code class="language-typescript">// Whole-API import, minified / gzipped (esbuild --bundle --minify):
+//
+// date-fns alone                                     70.9 KB / 17.8 KB
+// date-fns-tz alone (date-fns marked external)        8.8 KB /  3.3 KB
+// date-fns + date-fns-tz combined (deduped once)     79.7 KB / 21.0 KB
+// temporal-fns (timezones + interval algebra incl.)  84.7 KB / 23.6 KB</code></pre>
+          </div>
+          <p>
+            Importing everything, temporal-fns comes out about 1.06x the minified size and 1.13x the
+            gzipped size of date-fns + date-fns-tz combined. The extra ~5 KB comes from two sources,
+            not one. Part of it is new functions with no date-fns equivalent at all: 11 interval
+            set-algebra functions (<code>intersectIntervals</code>,
+            <code>unionIntervals</code>, <code>subtractInterval</code>,
+            <code>areIntervalsAdjacent</code>, <code>areIntervalsEquivalent</code>,
+            <code>isIntervalSubset</code>, <code>isIntervalSuperset</code>,
+            <code>isIntervalEmpty</code>, <code>splitIntervalByDuration</code>,
+            <code>sliceInterval</code>, <code>countIntervalUnits</code>) plus two timezone-identity
+            functions (<code>getTimezoneId</code>, <code>timeZoneIds</code>) for real IANA zone
+            identity rather than just offset math. The rest is the <code>Temporal</code> overloads
+            and type-dispatch logic added to functions that <em>do</em> have a date-fns equivalent —
+            every ported function accepts <code>Date</code> and all three
+            <code>Temporal</code> types, which means extra overload signatures and an
+            <code>instanceof</code> branch per function that date-fns, with only
+            <code>Date</code> to support, never needed.
+          </p>
+          <p>
+            The 11 set-algebra functions cover the same ground, in set-theory terms, as Luxon's
+            <code>Interval</code> class is known for: intersection, union (envelope),
+            difference/complement, equivalence, adjacency, subset, and superset, plus partitioning
+            an interval into fixed-size chunks. date-fns' own <code>Interval</code> shape — a plain
+            <code>{ start, end }</code> object, which temporal-fns deliberately keeps instead of
+            wrapping in a class — has none of these; date-fns only ships
+            <code>areIntervalsOverlapping</code> and <code>isWithinInterval</code> on top of it.
+            Reaching the same operation coverage starting from date-fns means writing and
+            maintaining that set-algebra layer yourself; temporal-fns ships it, as part of the extra
+            ~5 KB alongside the per-function <code>Temporal</code> logic described above.
+          </p>
+          <p>
+            See <a href="#bugs">Bugs</a> and <a href="#performance">Performance</a> for the other
+            two angles on the same set of design choices.
+          </p>
+        </section>
+        <hr />
+        <section class="section" id="example-format-date">
+          <div class="section-eyebrow">Examples</div>
+          <h2>Format date</h2>
+          <p>
+            Same functions, same arguments, same output as date-fns — just import from temporal-fns
+            instead.
+          </p>
+          <div class="code-block">
+            <div class="code-block-header"><span class="code-block-lang">typescript</span></div>
+            <pre><code class="language-typescript">import { format, formatDistance, formatRelative, subDays } from 'temporal-fns';
+
+format(new Date(), "'Today is a' eeee");
+//=> "Today is a Wednesday"
+
+formatDistance(subDays(new Date(), 3), new Date(), { addSuffix: true });
+//=> "3 days ago"
+
+formatRelative(subDays(new Date(), 3), new Date());
+//=> "last week"</code></pre>
+          </div>
+        </section>
+        <section class="section" id="example-i18n">
+          <div class="section-eyebrow">Examples</div>
+          <h2>I18n</h2>
+          <p>
+            date-fns ships a separate locale per language, imported by name
+            (<code>date-fns/locale</code>'s <code>es</code>, <code>ru</code>, and so on).
+            temporal-fns has no locale files at all — pass any
+            <a
+              href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl#locale_identification_and_negotiation"
+              target="_blank"
+              rel="noopener noreferrer"
+              >BCP 47 locale string</a
+            >
+            straight through to the native <code>Intl</code> object the runtime already ships with.
+          </p>
+          <div class="code-block">
+            <div class="code-block-header"><span class="code-block-lang">typescript</span></div>
+            <pre><code class="language-typescript">import { intlFormat, intlFormatDistance, subDays } from 'temporal-fns';
+
+const dateOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+
+intlFormat(new Date(2026, 5, 19), dateOptions, { locale: 'es' });
+//=> "19 de junio de 2026"
+
+intlFormat(new Date(2026, 5, 19), dateOptions, { locale: 'ja' });
+//=> "2026年6月19日"
+
+intlFormatDistance(subDays(new Date(), 3), new Date(), { locale: 'es' });
+//=> "hace 3 días"
+
+intlFormatDistance(subDays(new Date(), 3), new Date(), { locale: 'ru' });
+//=> "3 дня назад"</code></pre>
+          </div>
+          <div class="callout callout-info">
+            <div class="callout-label">Zero-weight</div>
+            <p>
+              None of this pulls in bundled locale data — date-fns' <code>locale/</code> directory
+              is over 5 MB raw across every language combined. <code>Intl</code> already ships with
+              the JS runtime at no bundle cost, for every locale it supports.
+            </p>
+          </div>
+        </section>
+        <section class="section" id="example-composition-fp">
+          <div class="section-eyebrow">Examples</div>
+          <h2>Composition &amp; FP</h2>
+          <p>
+            temporal-fns mirrors <code>date-fns/fp</code>: every function has a curried, data-last
+            counterpart under <code>temporal-fns/fp</code>, generated directly from the same
+            implementation as the regular export.
+          </p>
+          <div class="code-block">
+            <div class="code-block-header"><span class="code-block-lang">typescript</span></div>
+            <pre><code class="language-typescript">import { addYears, formatWithOptions } from 'temporal-fns/fp';
+
+const addFiveYears = addYears(5);
+
+const dateToString = formatWithOptions({ locale: 'es' }, 'd MMMM yyyy');
+
+const dates = [
+  new Date(2017, 0, 1),
+  new Date(2017, 1, 11),
+  new Date(2017, 6, 2),
+];
+
+const toUpper = (arg: unknown) => String(arg).toUpperCase();
+
+const formattedDates = dates.map(addFiveYears).map(dateToString).map(toUpper);
+//=> ['1 ENERO 2022', '11 FEBRERO 2022', '2 JULIO 2022']</code></pre>
+          </div>
+        </section>
+        <section class="section" id="example-arithmetic-comparison">
+          <div class="section-eyebrow">Examples</div>
+          <h2>Arithmetic &amp; Comparison</h2>
+          <p>
+            The everyday building blocks — add/subtract a unit, compare two dates, measure the gap
+            between them — work exactly like their date-fns counterparts.
+          </p>
+          <div class="code-block">
+            <div class="code-block-header"><span class="code-block-lang">typescript</span></div>
+            <pre><code class="language-typescript">import { addDays, isAfter, differenceInDays } from 'temporal-fns';
+
+addDays(new Date(2026, 5, 19), 10);
+//=> Mon Jun 29 2026
+
+isAfter(new Date(2026, 5, 20), new Date(2026, 5, 19));
+//=> true
+
+differenceInDays(new Date(2026, 5, 30), new Date(2026, 5, 19));
+//=> 11</code></pre>
+          </div>
+        </section>
+        <section class="section" id="example-intervals">
+          <div class="section-eyebrow">Examples</div>
+          <h2>Intervals</h2>
+          <p>
+            date-fns' interval helpers carry over directly, and temporal-fns adds the set-algebra
+            operations covered in <a href="#size">Size</a> — intersection, union, difference, and
+            the rest — natively, with no separate library to reach for.
+          </p>
+          <div class="code-block">
+            <div class="code-block-header"><span class="code-block-lang">typescript</span></div>
+            <pre><code class="language-typescript">import { eachDayOfInterval, intersectIntervals } from 'temporal-fns';
+
+const june1to3 = { start: new Date(2026, 5, 1), end: new Date(2026, 5, 3) };
+eachDayOfInterval(june1to3);
+//=> [Mon Jun 01 2026, Tue Jun 02 2026, Wed Jun 03 2026]
+
+const firstHalf = { start: new Date(2026, 5, 1), end: new Date(2026, 5, 10) };
+const secondHalf = { start: new Date(2026, 5, 5), end: new Date(2026, 5, 15) };
+intersectIntervals(firstHalf, secondHalf);
+//=> { start: Fri Jun 05 2026, end: Wed Jun 10 2026 }</code></pre>
+          </div>
+        </section>
+        <section class="section" id="example-temporal-types">
+          <div class="section-eyebrow">Examples</div>
+          <h2>Temporal Types</h2>
+          <p>
+            Every function also accepts <code>Temporal.PlainDate</code>, <code>PlainDateTime</code>,
+            and <code>ZonedDateTime</code> directly — the same function, no separate
+            Temporal-specific API to learn, with the result coming back as the same concrete type
+            you passed in.
+          </p>
+          <div class="code-block">
+            <div class="code-block-header"><span class="code-block-lang">typescript</span></div>
+            <pre><code class="language-typescript">import { addDays, format } from 'temporal-fns';
+
+// ZonedDateTime in, ZonedDateTime out — DST-correct by construction
+const meetingZone = 'America/New_York';
+const meeting = Temporal.ZonedDateTime.from(`2026-03-07T12:00:00-05:00[${meetingZone}]`);
+addDays(meeting, 1);
+//=> 2026-03-08T12:00:00-04:00[America/New_York]  (offset correctly flips across DST)
+
+// PlainDate in, formatted directly — no Date round-trip
+format(Temporal.PlainDate.from('2026-06-19'), 'PPP');
+//=> "June 19th, 2026"</code></pre>
+          </div>
+        </section>
+        <section class="section" id="example-timezones">
+          <div class="section-eyebrow">Examples</div>
+          <h2>Time Zones</h2>
+          <p>
+            The four functions ported from <code>date-fns-tz</code> work the same way, built on
+            <code>Temporal.ZonedDateTime</code> instead of hand-rolled offset parsing — see
+            <a href="#bugs">Bugs</a> and <a href="#performance">Performance</a> for what that buys
+            you.
+          </p>
+          <div class="code-block">
+            <div class="code-block-header"><span class="code-block-lang">typescript</span></div>
+            <pre><code class="language-typescript">import { fromZonedTime, toZonedTime, formatInTimeZone } from 'temporal-fns';
+
+// 10 AM local time in Los Angeles, expressed as a UTC Date:
+const localTime = new Date(2026, 5, 19, 10, 0, 0);
+const utc = fromZonedTime(localTime, 'America/Los_Angeles');
+//=> 2026-06-19T17:00:00.000Z
+
+// Read it back as Los Angeles wall-clock time:
+toZonedTime(utc, 'America/Los_Angeles').getHours();
+//=> 10
+
+formatInTimeZone(utc, 'America/Los_Angeles', 'PPpp');
+//=> "Jun 19, 2026, 10:00:00 AM"</code></pre>
+          </div>
+        </section>
+      </main>
+    </div>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        Prism.plugins.autoloader.languages_path = 'lib/components/';
+        Prism.highlightAll();
+
+        // Active nav link on scroll
+        const sections = document.querySelectorAll('.section[id]');
+        const links = document.querySelectorAll('.nav-link');
+
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                links.forEach((l) => l.classList.remove('active'));
+                const active = document.querySelector(`.nav-link[href="#${entry.target.id}"]`);
+                if (active) active.classList.add('active');
+              }
+            });
+          },
+          { rootMargin: '-20% 0px -70% 0px' }
+        );
+
+        sections.forEach((s) => observer.observe(s));
+      });
+    </script>
+  </body>
+</html>

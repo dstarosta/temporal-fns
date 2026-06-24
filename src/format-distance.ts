@@ -1,6 +1,6 @@
 import { compare } from './helpers/compare.js';
 import { differenceInMonthsValue } from './helpers/create-difference-in-date-unit.js';
-import { formatDistanceWords } from './helpers/format-distance-locale.js';
+import { formatRelativeUnit } from './helpers/format-distance-locale.js';
 import { toDstNormalizedMilliseconds } from './helpers/to-dst-normalized-milliseconds.js';
 import { toEpochMilliseconds } from './helpers/to-epoch-milliseconds.js';
 import { type DateLike } from './types.js';
@@ -11,6 +11,7 @@ import { type DateLike } from './types.js';
 export interface FormatDistanceOptions {
   includeSeconds?: boolean;
   addSuffix?: boolean;
+  locale?: Intl.LocalesArgument;
 }
 
 const minutesInDay = 1440;
@@ -42,7 +43,7 @@ export function formatDistanceValue(
   const [orderedLater, orderedEarlier] =
     comparison > 0 ? [earlierDate, laterDate] : [laterDate, earlierDate];
 
-  const localizeOptions = { addSuffix: options?.addSuffix, comparison };
+  const localizeOptions = { addSuffix: options?.addSuffix, comparison, locale: options?.locale };
 
   const seconds = Math.round(
     (toEpochMilliseconds(orderedEarlier) - toEpochMilliseconds(orderedLater)) / 1000
@@ -55,70 +56,76 @@ export function formatDistanceValue(
       60_000
   );
 
+  // The bucket boundaries below are unchanged from date-fns' own thresholds (correct,
+  // locale-independent math). Only the rendering changed: date-fns layers qualifier words
+  // ("about", "less than", "half a", "over", "almost") on top of these buckets via per-locale
+  // word tables; this renders a plain count instead (see formatRelativeUnit's own comment for
+  // why), so several previously textually-distinct buckets now render identically (e.g. "about
+  // 1 year"/"over 1 year"/"almost 2 years" all become a plain year count).
   if (minutes < 2) {
     if (options?.includeSeconds) {
       if (seconds < 5) {
-        return formatDistanceWords('lessThanXSeconds', 5, localizeOptions);
+        return formatRelativeUnit('second', 5, localizeOptions);
       }
       if (seconds < 10) {
-        return formatDistanceWords('lessThanXSeconds', 10, localizeOptions);
+        return formatRelativeUnit('second', 10, localizeOptions);
       }
       if (seconds < 20) {
-        return formatDistanceWords('lessThanXSeconds', 20, localizeOptions);
+        return formatRelativeUnit('second', 20, localizeOptions);
       }
       if (seconds < 40) {
-        return formatDistanceWords('halfAMinute', 0, localizeOptions);
+        return formatRelativeUnit('second', 30, localizeOptions);
       }
       if (seconds < 60) {
-        return formatDistanceWords('lessThanXMinutes', 1, localizeOptions);
+        return formatRelativeUnit('minute', 1, localizeOptions);
       }
-      return formatDistanceWords('xMinutes', 1, localizeOptions);
+      return formatRelativeUnit('minute', 1, localizeOptions);
     }
     if (minutes === 0) {
-      return formatDistanceWords('lessThanXMinutes', 1, localizeOptions);
+      return formatRelativeUnit('minute', 1, localizeOptions);
     }
-    return formatDistanceWords('xMinutes', minutes, localizeOptions);
+    return formatRelativeUnit('minute', minutes, localizeOptions);
   }
 
   if (minutes < 45) {
-    return formatDistanceWords('xMinutes', minutes, localizeOptions);
+    return formatRelativeUnit('minute', minutes, localizeOptions);
   }
   if (minutes < 90) {
-    return formatDistanceWords('aboutXHours', 1, localizeOptions);
+    return formatRelativeUnit('hour', 1, localizeOptions);
   }
   if (minutes < minutesInDay) {
     const hours = Math.round(minutes / 60);
-    return formatDistanceWords('aboutXHours', hours, localizeOptions);
+    return formatRelativeUnit('hour', hours, localizeOptions);
   }
   if (minutes < minutesInAlmostTwoDays) {
-    return formatDistanceWords('xDays', 1, localizeOptions);
+    return formatRelativeUnit('day', 1, localizeOptions);
   }
   if (minutes < minutesInMonth) {
     const days = Math.round(minutes / minutesInDay);
-    return formatDistanceWords('xDays', days, localizeOptions);
+    return formatRelativeUnit('day', days, localizeOptions);
   }
   if (minutes < minutesInMonth * 2) {
     const months = Math.round(minutes / minutesInMonth);
-    return formatDistanceWords('aboutXMonths', months, localizeOptions);
+    return formatRelativeUnit('month', months, localizeOptions);
   }
 
   const months = differenceInMonthsValue(orderedEarlier, orderedLater);
 
   if (months < 12) {
     const nearestMonth = Math.round(minutes / minutesInMonth);
-    return formatDistanceWords('xMonths', nearestMonth, localizeOptions);
+    return formatRelativeUnit('month', nearestMonth, localizeOptions);
   }
 
   const monthsSinceStartOfYear = months % 12;
   const years = Math.trunc(months / 12);
 
   if (monthsSinceStartOfYear < 3) {
-    return formatDistanceWords('aboutXYears', years, localizeOptions);
+    return formatRelativeUnit('year', years, localizeOptions);
   }
   if (monthsSinceStartOfYear < 9) {
-    return formatDistanceWords('overXYears', years, localizeOptions);
+    return formatRelativeUnit('year', years, localizeOptions);
   }
-  return formatDistanceWords('almostXYears', years + 1, localizeOptions);
+  return formatRelativeUnit('year', years + 1, localizeOptions);
 }
 
 /**
@@ -128,7 +135,7 @@ export function formatDistanceValue(
  * Return the distance between the given dates in words.
  *
  * | Distance between dates                                            | Result              |
- * |---------------------------------------------------------------------|---------------------|
+ * |-------------------------------------------------------------------|---------------------|
  * | 0 ... 30 secs                                                     | less than a minute  |
  * | 30 secs ... 1 min 30 secs                                         | 1 minute            |
  * | 1 min 30 secs ... 44 mins 30 secs                                 | [2..44] minutes     |
@@ -148,7 +155,7 @@ export function formatDistanceValue(
  *
  * With `options.includeSeconds == true`:
  * | Distance between dates | Result               |
- * |-------------------------|----------------------|
+ * |------------------------|----------------------|
  * | 0 secs ... 5 secs      | less than 5 seconds  |
  * | 5 secs ... 10 secs     | less than 10 seconds |
  * | 10 secs ... 20 secs    | less than 20 seconds |
@@ -197,7 +204,7 @@ export function formatDistance(
  * Return the distance between the given dates in words.
  *
  * | Distance between dates                                            | Result              |
- * |---------------------------------------------------------------------|---------------------|
+ * |-------------------------------------------------------------------|---------------------|
  * | 0 ... 30 secs                                                     | less than a minute  |
  * | 30 secs ... 1 min 30 secs                                         | 1 minute            |
  * | 1 min 30 secs ... 44 mins 30 secs                                 | [2..44] minutes     |
@@ -217,7 +224,7 @@ export function formatDistance(
  *
  * With `options.includeSeconds == true`:
  * | Distance between dates | Result               |
- * |-------------------------|----------------------|
+ * |------------------------|----------------------|
  * | 0 secs ... 5 secs      | less than 5 seconds  |
  * | 5 secs ... 10 secs     | less than 10 seconds |
  * | 10 secs ... 20 secs    | less than 20 seconds |

@@ -86,117 +86,19 @@ function cleanEscapedString(input: string): string {
   return (matches[1] ?? '').replace(doubleQuoteRegExp, "'");
 }
 
-function dateLongFormat(pattern: string, formatLong: FormatLongFn): string {
-  switch (pattern) {
-    case 'P': {
-      return formatLong.date('short');
-    }
-    case 'PP': {
-      return formatLong.date('medium');
-    }
-    case 'PPP': {
-      return formatLong.date('long');
-    }
-    default: {
-      return formatLong.date('full');
-    }
-  }
-}
-
-function timeLongFormat(pattern: string, formatLong: FormatLongFn): string {
-  switch (pattern) {
-    case 'p': {
-      return formatLong.time('short');
-    }
-    case 'pp': {
-      return formatLong.time('medium');
-    }
-    case 'ppp': {
-      return formatLong.time('long');
-    }
-    default: {
-      return formatLong.time('full');
-    }
-  }
-}
-
-const dateTimeLongPatternRegExp = /(P+)(p+)?/;
-
-type FormatLongWidth = 'short' | 'medium' | 'long' | 'full';
-
-interface FormatLongFn {
-  date: (width: FormatLongWidth) => string;
-  time: (width: FormatLongWidth) => string;
-  dateTime: (width: FormatLongWidth) => string;
-}
-
-function dateTimeLongFormat(pattern: string, formatLong: FormatLongFn): string {
-  const matchResult = dateTimeLongPatternRegExp.exec(pattern);
-  const datePattern = matchResult?.[1];
-  const timePattern = matchResult?.[2];
-
-  if (!timePattern || !datePattern) {
-    return dateLongFormat(pattern, formatLong);
-  }
-
-  let dateTimeFormatStr: string;
-  switch (datePattern) {
-    case 'P': {
-      dateTimeFormatStr = formatLong.dateTime('short');
-      break;
-    }
-    case 'PP': {
-      dateTimeFormatStr = formatLong.dateTime('medium');
-      break;
-    }
-    case 'PPP': {
-      dateTimeFormatStr = formatLong.dateTime('long');
-      break;
-    }
-    default: {
-      dateTimeFormatStr = formatLong.dateTime('full');
-      break;
-    }
-  }
-
-  return dateTimeFormatStr
-    .replace('{{date}}', dateLongFormat(datePattern, formatLong))
-    .replace('{{time}}', timeLongFormat(timePattern, formatLong));
-}
-
-const dateFormats = {
-  full: 'EEEE, MMMM do, y',
-  long: 'MMMM do, y',
-  medium: 'MMM d, y',
-  short: 'MM/dd/yyyy',
-};
-
-const timeFormats = {
-  full: 'h:mm:ss a zzzz',
-  long: 'h:mm:ss a z',
-  medium: 'h:mm:ss a',
-  short: 'h:mm a',
-};
-
-const dateTimeFormats = {
-  full: "{{date}} 'at' {{time}}",
-  long: "{{date}} 'at' {{time}}",
-  medium: '{{date}}, {{time}}',
-  short: '{{date}}, {{time}}',
-};
-
-const enUSFormatLong: FormatLongFn = {
-  date: (width) => dateFormats[width],
-  time: (width) => timeFormats[width],
-  dateTime: (width) => dateTimeFormats[width],
-};
-
 interface FormatPart {
   isToken: boolean;
   value: string;
 }
 
-function tokenizeLongFormat(formatStr: string): string {
+// Splits formatStr into P/p long-date/time runs (kept as a single opaque token each, e.g.
+// 'PPpp' stays one token rather than being expanded into a literal sub-pattern) and everything
+// else (re-tokenized normally via tokenizeFormat). P/p are resolved at format-time instead of
+// here, via their own `formatters` entries (see dateTimeLongToken in format-formatters.ts) -
+// unlike every other long-date width, P/p's actual rendered text depends on `locale` (each
+// locale has its own date/time order and connector words), so it can't be decided from formatStr
+// alone the way this function's result is cached.
+function tokenizeLongFormat(formatStr: string): FormatPart[] {
   const matches = formatStr.match(longFormattingTokensRegExp);
   // formatStr is always a non-empty pattern by the time this runs (an empty
   // string never reaches here through `format`'s normal use), and the regex's
@@ -205,19 +107,32 @@ function tokenizeLongFormat(formatStr: string): string {
   // pathological empty-string case.
   /* v8 ignore next 3 */
   if (!matches) {
-    return '';
+    return [];
   }
-  return matches
-    .map((substring) => {
-      const firstCharacter = substring[0];
-      if (firstCharacter === 'p' || firstCharacter === 'P') {
-        return firstCharacter === 'p'
-          ? timeLongFormat(substring, enUSFormatLong)
-          : dateTimeLongFormat(substring, enUSFormatLong);
+
+  // longFormattingTokensRegExp's fallback `.` alternative matches one character at a time for
+  // anything that isn't a P/p run or a quoted string (e.g. 'yyyy' comes back as four separate
+  // 'y' matches) - those need to be re-joined into contiguous non-P/p runs before tokenizeFormat
+  // sees them, otherwise tokenizeFormat would tokenize each single character on its own (losing
+  // any multi-character token like 'yyyy' entirely) instead of the original substring.
+  const parts: FormatPart[] = [];
+  let pendingRun = '';
+  for (const substring of matches) {
+    const firstCharacter = substring[0];
+    if (firstCharacter === 'p' || firstCharacter === 'P') {
+      if (pendingRun) {
+        parts.push(...tokenizeFormat(pendingRun));
+        pendingRun = '';
       }
-      return substring;
-    })
-    .join('');
+      parts.push({ isToken: true, value: substring });
+    } else {
+      pendingRun += substring;
+    }
+  }
+  if (pendingRun) {
+    parts.push(...tokenizeFormat(pendingRun));
+  }
+  return parts;
 }
 
 // Parsing a format string into FormatPart[] only depends on formatStr itself (never on date or
@@ -243,8 +158,7 @@ function parseFormatParts(formatStr: string): FormatPart[] {
   if (cached) {
     return cached;
   }
-  const preprocessed = tokenizeLongFormat(formatStr);
-  const parts = tokenizeFormat(preprocessed);
+  const parts = tokenizeLongFormat(formatStr);
   if (formatPartsCache.size >= formatPartsCacheLimit) {
     const evictCount = Math.ceil(formatPartsCacheLimit * formatPartsCacheEvictFraction);
     const oldestKeys = formatPartsCache.keys();
@@ -311,7 +225,7 @@ function tokenizeFormat(formatStr: string): FormatPart[] {
  *
  * Accepted patterns:
  * | Unit                            | Pattern | Result examples                   | Notes |
- * |----------------------------------|---------|------------------------------------|-------|
+ * |---------------------------------|---------|-----------------------------------|-------|
  * | Era                             | G..GGG  | AD, BC                            |       |
  * |                                 | GGGG    | Anno Domini, Before Christ        | 2     |
  * |                                 | GGGGG   | A, B                              |       |
@@ -459,10 +373,10 @@ function tokenizeFormat(formatStr: string): FormatPart[] {
  * |                                 | pp      | 12:00:00 AM                       | 7     |
  * |                                 | ppp     | 12:00:00 AM GMT+2                 | 7     |
  * |                                 | pppp    | 12:00:00 AM GMT+02:00             | 2,7   |
- * | Combination of date and time    | Pp      | 04/29/1453, 12:00 AM              | 7     |
- * |                                 | PPpp    | Apr 29, 1453, 12:00:00 AM         | 7     |
- * |                                 | PPPppp  | April 29th, 1453 at ...           | 7     |
- * |                                 | PPPPpppp| Friday, April 29th, 1453 at ...   | 2,7   |
+ * | Combination of date and time    | Pp      | 4/29/13, 12:00 AM                 | 7     |
+ * |                                 | PPpp    | Apr 29, 2013, 12:00:00 AM         | 7     |
+ * |                                 | PPPppp  | April 29th, 2013 at ...           | 7     |
+ * |                                 | PPPPpppp| Friday, April 29th, 2013 at ...   | 2,7   |
  *
  * Notes:
  * 1. "Formatting" units (e.g. formatting quarter) in the default en-US locale

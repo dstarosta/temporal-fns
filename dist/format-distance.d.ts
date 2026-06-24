@@ -7,6 +7,7 @@ import { DateLike } from "./types.js";
 interface FormatDistanceOptions {
   includeSeconds?: boolean;
   addSuffix?: boolean;
+  locale?: Intl.LocalesArgument;
 }
 /**
  * @summary Return the distance between the given dates in words.
@@ -15,7 +16,7 @@ interface FormatDistanceOptions {
  * Return the distance between the given dates in words.
  *
  * | Distance between dates                                            | Result              |
- * |---------------------------------------------------------------------|---------------------|
+ * |-------------------------------------------------------------------|---------------------|
  * | 0 ... 30 secs                                                     | less than a minute  |
  * | 30 secs ... 1 min 30 secs                                         | 1 minute            |
  * | 1 min 30 secs ... 44 mins 30 secs                                 | [2..44] minutes     |
@@ -35,7 +36,7 @@ interface FormatDistanceOptions {
  *
  * With `options.includeSeconds == true`:
  * | Distance between dates | Result               |
- * |-------------------------|----------------------|
+ * |------------------------|----------------------|
  * | 0 secs ... 5 secs      | less than 5 seconds  |
  * | 5 secs ... 10 secs     | less than 10 seconds |
  * | 10 secs ... 20 secs    | less than 20 seconds |
@@ -80,7 +81,7 @@ declare function formatDistance(laterDate: Date, earlierDate: Date, options?: Fo
  * Return the distance between the given dates in words.
  *
  * | Distance between dates                                            | Result              |
- * |---------------------------------------------------------------------|---------------------|
+ * |-------------------------------------------------------------------|---------------------|
  * | 0 ... 30 secs                                                     | less than a minute  |
  * | 30 secs ... 1 min 30 secs                                         | 1 minute            |
  * | 1 min 30 secs ... 44 mins 30 secs                                 | [2..44] minutes     |
@@ -100,7 +101,7 @@ declare function formatDistance(laterDate: Date, earlierDate: Date, options?: Fo
  *
  * With `options.includeSeconds == true`:
  * | Distance between dates | Result               |
- * |-------------------------|----------------------|
+ * |------------------------|----------------------|
  * | 0 secs ... 5 secs      | less than 5 seconds  |
  * | 5 secs ... 10 secs     | less than 10 seconds |
  * | 10 secs ... 20 secs    | less than 20 seconds |

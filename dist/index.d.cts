@@ -19,6 +19,7 @@ interface FormatDurationOptions {
   format?: FormatDurationUnit[];
   zero?: boolean;
   delimiter?: string;
+  locale?: Intl.LocalesArgument;
 }
 /**
  * @summary Formats a duration in human-readable format
@@ -3085,7 +3086,7 @@ interface FormatOptions extends LocalWeekOptions {
  *
  * Accepted patterns:
  * | Unit                            | Pattern | Result examples                   | Notes |
- * |----------------------------------|---------|------------------------------------|-------|
+ * |---------------------------------|---------|-----------------------------------|-------|
  * | Era                             | G..GGG  | AD, BC                            |       |
  * |                                 | GGGG    | Anno Domini, Before Christ        | 2     |
  * |                                 | GGGGG   | A, B                              |       |
@@ -3233,10 +3234,10 @@ interface FormatOptions extends LocalWeekOptions {
  * |                                 | pp      | 12:00:00 AM                       | 7     |
  * |                                 | ppp     | 12:00:00 AM GMT+2                 | 7     |
  * |                                 | pppp    | 12:00:00 AM GMT+02:00             | 2,7   |
- * | Combination of date and time    | Pp      | 04/29/1453, 12:00 AM              | 7     |
- * |                                 | PPpp    | Apr 29, 1453, 12:00:00 AM         | 7     |
- * |                                 | PPPppp  | April 29th, 1453 at ...           | 7     |
- * |                                 | PPPPpppp| Friday, April 29th, 1453 at ...   | 2,7   |
+ * | Combination of date and time    | Pp      | 4/29/13, 12:00 AM                 | 7     |
+ * |                                 | PPpp    | Apr 29, 2013, 12:00:00 AM         | 7     |
+ * |                                 | PPPppp  | April 29th, 2013 at ...           | 7     |
+ * |                                 | PPPPpppp| Friday, April 29th, 2013 at ...   | 2,7   |
  *
  * Notes:
  * 1. "Formatting" units (e.g. formatting quarter) in the default en-US locale
@@ -3344,6 +3345,7 @@ declare function format(date: Date | DateLike, formatStr: string, options?: Form
 interface FormatDistanceOptions {
   includeSeconds?: boolean;
   addSuffix?: boolean;
+  locale?: Intl.LocalesArgument;
 }
 /**
  * @summary Return the distance between the given dates in words.
@@ -3352,7 +3354,7 @@ interface FormatDistanceOptions {
  * Return the distance between the given dates in words.
  *
  * | Distance between dates                                            | Result              |
- * |---------------------------------------------------------------------|---------------------|
+ * |-------------------------------------------------------------------|---------------------|
  * | 0 ... 30 secs                                                     | less than a minute  |
  * | 30 secs ... 1 min 30 secs                                         | 1 minute            |
  * | 1 min 30 secs ... 44 mins 30 secs                                 | [2..44] minutes     |
@@ -3372,7 +3374,7 @@ interface FormatDistanceOptions {
  *
  * With `options.includeSeconds == true`:
  * | Distance between dates | Result               |
- * |-------------------------|----------------------|
+ * |------------------------|----------------------|
  * | 0 secs ... 5 secs      | less than 5 seconds  |
  * | 5 secs ... 10 secs     | less than 10 seconds |
  * | 10 secs ... 20 secs    | less than 20 seconds |
@@ -3417,7 +3419,7 @@ declare function formatDistance(laterDate: Date, earlierDate: Date, options?: Fo
  * Return the distance between the given dates in words.
  *
  * | Distance between dates                                            | Result              |
- * |---------------------------------------------------------------------|---------------------|
+ * |-------------------------------------------------------------------|---------------------|
  * | 0 ... 30 secs                                                     | less than a minute  |
  * | 30 secs ... 1 min 30 secs                                         | 1 minute            |
  * | 1 min 30 secs ... 44 mins 30 secs                                 | [2..44] minutes     |
@@ -3437,7 +3439,7 @@ declare function formatDistance(laterDate: Date, earlierDate: Date, options?: Fo
  *
  * With `options.includeSeconds == true`:
  * | Distance between dates | Result               |
- * |-------------------------|----------------------|
+ * |------------------------|----------------------|
  * | 0 secs ... 5 secs      | less than 5 seconds  |
  * | 5 secs ... 10 secs     | less than 10 seconds |
  * | 10 secs ... 20 secs    | less than 20 seconds |
@@ -3490,6 +3492,7 @@ interface FormatDistanceStrictOptions {
   addSuffix?: boolean;
   unit?: FormatDistanceStrictUnit;
   roundingMethod?: FormatDistanceStrictRoundingMethod;
+  locale?: Intl.LocalesArgument;
 }
 /**
  * @summary Return the distance between the given dates in words.
@@ -3500,7 +3503,7 @@ interface FormatDistanceStrictOptions {
  * 'less than' and the like.
  *
  * | Distance between dates | Result              |
- * |--------------------------|---------------------|
+ * |------------------------|---------------------|
  * | 0 ... 59 secs          | [0..59] seconds     |
  * | 1 ... 59 mins          | [1..59] minutes     |
  * | 1 ... 23 hrs           | [1..23] hours       |
@@ -3538,7 +3541,7 @@ declare function formatDistanceStrict(laterDate: Date, earlierDate: Date, option
  * 'less than' and the like.
  *
  * | Distance between dates | Result              |
- * |--------------------------|---------------------|
+ * |------------------------|---------------------|
  * | 0 ... 59 secs          | [0..59] seconds     |
  * | 1 ... 59 mins          | [1..59] minutes     |
  * | 1 ... 23 hrs           | [1..23] hours       |
@@ -3580,7 +3583,7 @@ declare function formatDistanceStrict<T extends DateLike>(laterDate: T, earlierD
  * Return the distance between the given date and now in words.
  *
  * | Distance to now                                                   | Result              |
- * |---------------------------------------------------------------------|---------------------|
+ * |-------------------------------------------------------------------|---------------------|
  * | 0 ... 30 secs                                                     | less than a minute  |
  * | 30 secs ... 1 min 30 secs                                         | 1 minute            |
  * | 1 min 30 secs ... 44 mins 30 secs                                 | [2..44] minutes     |
@@ -3600,7 +3603,7 @@ declare function formatDistanceStrict<T extends DateLike>(laterDate: T, earlierD
  *
  * With `options.includeSeconds == true`:
  * | Distance to now     | Result               |
- * |-----------------------|----------------------|
+ * |---------------------|----------------------|
  * | 0 secs ... 5 secs   | less than 5 seconds  |
  * | 5 secs ... 10 secs  | less than 10 seconds |
  * | 10 secs ... 20 secs | less than 20 seconds |
@@ -3650,7 +3653,7 @@ declare function formatDistanceToNow(date: Date | DateLike, options?: FormatDist
  * 'less than' and the like.
  *
  * | Distance between dates | Result              |
- * |--------------------------|---------------------|
+ * |------------------------|---------------------|
  * | 0 ... 59 secs          | [0..59] seconds     |
  * | 1 ... 59 mins          | [1..59] minutes     |
  * | 1 ... 23 hrs           | [1..23] hours       |
@@ -3860,16 +3863,24 @@ interface FormatRelativeOptions {
  * @summary Represent the date in words relative to the given base date.
  *
  * @description
- * Represent the date in words relative to the given base date.
+ * Represent the date in words relative to the given base date, via `Intl.RelativeTimeFormat` —
+ * correctly localized for any `options.locale`, not just English. This is a deliberate departure
+ * from date-fns' own `formatRelative`: date-fns names the specific weekday and includes a
+ * time-of-day (`"last Thursday at 12:45 AM"`), using per-locale `Locale` objects with bundled
+ * connector-word data ("last", "at", and so on) for every supported language. There's no
+ * `Intl` primitive that provides that same weekday+time composite in an arbitrary locale, so
+ * rather than hardcode English connector words and silently produce broken output for every
+ * other locale, this resolves to `Intl.RelativeTimeFormat`'s day/week granularity instead, with
+ * no time-of-day component, for every locale including English.
  *
- * | Distance to the base date | Result                    |
- * |-----------------------------|---------------------------|
- * | Previous 6 days           | last Sunday at 04:30 AM   |
- * | Last day                  | yesterday at 04:30 AM     |
- * | Same day                  | today at 04:30 AM         |
- * | Next day                  | tomorrow at 04:30 AM      |
- * | Next 6 days               | Sunday at 04:30 AM        |
- * | Other                     | 12/31/2017                |
+ * | Distance to the base date | Result (en)  |
+ * |---------------------------|--------------|
+ * | Previous 2-6 days         | last week    |
+ * | Last day                  | yesterday    |
+ * | Same day                  | today        |
+ * | Next day                  | tomorrow     |
+ * | Next 2-6 days             | next week    |
+ * | Other                     | 12/31/2017   |
  *
  * @param date - The date to format
  * @param baseDate - The date to compare with
@@ -3878,25 +3889,38 @@ interface FormatRelativeOptions {
  * @returns The date in words
  *
  * @example
- * // Represent the date of 6 days ago in words relative to the given base date. In this example, today is Wednesday
+ * // Represent the date of 6 days ago in words relative to the given base date:
  * const result = formatRelative(subDays(new Date(), 6), new Date())
- * //=> "last Thursday at 12:45 AM"
+ * //=> "last week"
+ *
+ * @example
+ * // Correctly localized for any locale, unlike date-fns' weekday+time composite:
+ * const result = formatRelative(subDays(new Date(), 3), new Date(), { locale: 'es' })
+ * //=> "hace 3 días"
  */
 declare function formatRelative(date: Date, baseDate: Date, options?: FormatRelativeOptions): string;
 /**
  * @summary Represent the date in words relative to the given base date.
  *
  * @description
- * Represent the date in words relative to the given base date.
+ * Represent the date in words relative to the given base date, via `Intl.RelativeTimeFormat` —
+ * correctly localized for any `options.locale`, not just English. This is a deliberate departure
+ * from date-fns' own `formatRelative`: date-fns names the specific weekday and includes a
+ * time-of-day (`"last Thursday at 12:45 AM"`), using per-locale `Locale` objects with bundled
+ * connector-word data ("last", "at", and so on) for every supported language. There's no
+ * `Intl` primitive that provides that same weekday+time composite in an arbitrary locale, so
+ * rather than hardcode English connector words and silently produce broken output for every
+ * other locale, this resolves to `Intl.RelativeTimeFormat`'s day/week granularity instead, with
+ * no time-of-day component, for every locale including English.
  *
- * | Distance to the base date | Result                    |
- * |-----------------------------|---------------------------|
- * | Previous 6 days           | last Sunday at 04:30 AM   |
- * | Last day                  | yesterday at 04:30 AM     |
- * | Same day                  | today at 04:30 AM         |
- * | Next day                  | tomorrow at 04:30 AM      |
- * | Next 6 days               | Sunday at 04:30 AM        |
- * | Other                     | 12/31/2017                |
+ * | Distance to the base date | Result (en)  |
+ * |---------------------------|--------------|
+ * | Previous 2-6 days         | last week    |
+ * | Last day                  | yesterday    |
+ * | Same day                  | today        |
+ * | Next day                  | tomorrow     |
+ * | Next 2-6 days             | next week    |
+ * | Other                     | 12/31/2017   |
  *
  * @typeParam T - A {@link DateLike} type (`Temporal.PlainDate`, `Temporal.PlainDateTime` or
  * `Temporal.ZonedDateTime`). Inferred from `date`/`baseDate`, which must share the same
@@ -3909,9 +3933,14 @@ declare function formatRelative(date: Date, baseDate: Date, options?: FormatRela
  * @returns The date in words
  *
  * @example
- * // Represent the date of 6 days ago in words relative to the given base date. In this example, today is Wednesday
+ * // Represent the date of 6 days ago in words relative to the given base date:
  * const result = formatRelative(subDays(new Date(), 6), new Date())
- * //=> "last Thursday at 12:45 AM"
+ * //=> "last week"
+ *
+ * @example
+ * // Correctly localized for any locale, unlike date-fns' weekday+time composite:
+ * const result = formatRelative(subDays(new Date(), 3), new Date(), { locale: 'es' })
+ * //=> "hace 3 días"
  */
 declare function formatRelative<T extends DateLike>(date: T, baseDate: T, options?: FormatRelativeOptions): string;
 //#endregion
@@ -10448,6 +10477,16 @@ type TimeZoneId = (typeof timeZoneIds)[number];
 //#endregion
 //#region src/to-date.d.ts
 /**
+ * The {@link toDate} function options.
+ */
+interface ToDateOptions {
+  /**
+   * The IANA time zone identifier to resolve string input in, when the string has no offset of
+   * its own. Matches `date-fns-tz`'s `toDate` `options.timeZone`.
+   */
+  timeZone?: string;
+}
+/**
  * @summary Convert the given argument to an instance of `Date`.
  *
  * @description
@@ -10461,13 +10500,20 @@ type TimeZoneId = (typeof timeZoneIds)[number];
  * represents the same instant (`argument.epochMilliseconds`), not its wall-clock fields
  * reinterpreted as local time.
  *
- * If the argument is a number or string, it is passed directly to the `Date` constructor (a
- * number is treated as a timestamp).
+ * If the argument is a number, it is passed directly to the `Date` constructor (treated as a
+ * timestamp).
+ *
+ * If the argument is a string and `options.timeZone` is not given, it is passed directly to the
+ * `Date` constructor. If `options.timeZone` is given, the string is parsed as ISO 8601 (complete
+ * or partial) and resolved as the local time in that time zone — unless the string itself
+ * carries an offset, in which case the offset wins and `options.timeZone` is ignored, matching
+ * `date-fns-tz`'s `toDate`.
  *
  * If the argument is none of the above, the function returns an invalid `Date` (whose time
  * value is `NaN`).
  *
  * @param argument - The value to convert
+ * @param options - An object with options
  *
  * @returns The converted date
  *
@@ -10480,8 +10526,13 @@ type TimeZoneId = (typeof timeZoneIds)[number];
  * // Convert the timestamp to date:
  * const result = toDate(1392098430000)
  * //=> Tue Feb 11 2014 11:30:30
+ *
+ * @example
+ * // Parse a string with no offset as local time in a time zone:
+ * const result = toDate('2014-06-25T10:00:00', { timeZone: 'America/Los_Angeles' })
+ * //=> 2014-06-25T17:00:00.000Z
  */
-declare function toDate(argument: unknown): Date;
+declare function toDate(argument: unknown, options?: ToDateOptions): Date;
 //#endregion
 //#region src/to-plain-date.d.ts
 /**
