@@ -1,0 +1,1 @@
+import{getDateTimeFields as e}from"./helpers/format-fields.js";function t(t,n){let r=e(t),i=Temporal.ZonedDateTime.from({timeZone:n,year:r.year,month:r.month,day:r.day,hour:r.hour,minute:r.minute,second:r.second,millisecond:r.millisecond});return new Date(i.epochMilliseconds)}export{t as fromZonedTime};

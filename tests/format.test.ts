@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { format as dateFnsFormat } from 'date-fns';
+import { format as dateFnsTzFormat } from 'date-fns-tz';
 import { format } from '../src/format.js';
 import { toPlainDate, toPlainDateTime, toUTCDate, toZonedDateTime } from './helpers/fixtures.js';
 
@@ -315,9 +316,14 @@ describe('format', () => {
     expect(format(utcSample, 'X')).toBe(dateFnsFormat(utcSample, 'X'));
   });
 
-  it('matches date-fns for ZonedDateTime input', () => {
-    const fmt = "EEEE, MMMM do, yyyy 'at' h:mm:ss a zzzz";
-    expect(format(toZonedDateTime(date), fmt)).toBe(dateFnsFormat(date, fmt));
+  it("matches date-fns for everything but the zzzz token, which resolves the real system-zone name instead of date-fns' GMT-offset fallback", () => {
+    const fmtWithoutZ = "EEEE, MMMM do, yyyy 'at' h:mm:ss a";
+    expect(format(toZonedDateTime(date), fmtWithoutZ)).toBe(dateFnsFormat(date, fmtWithoutZ));
+
+    const expectedZoneName = new Intl.DateTimeFormat('en-US', { timeZoneName: 'long' })
+      .formatToParts(date)
+      .find((part) => part.type === 'timeZoneName')?.value;
+    expect(format(toZonedDateTime(date), 'zzzz')).toBe(expectedZoneName);
   });
 
   it('formats a ZonedDateTime in a fixed non-system zone using that zone (not the system zone)', () => {
@@ -340,6 +346,28 @@ describe('format', () => {
     );
   });
 
+  it('matches date-fns-tz for options.timeZone with a plain Date input (offset token)', () => {
+    const sample = new Date('2014-10-25T10:46:20Z');
+    const fmt = 'yyyy-MM-dd HH:mm:ssXXX';
+    expect(format(sample, fmt, { timeZone: 'America/New_York' })).toBe(
+      dateFnsTzFormat(sample, fmt, { timeZone: 'America/New_York' })
+    );
+  });
+
+  it('matches date-fns-tz for options.timeZone with a plain Date input (short zone-name token)', () => {
+    const sample = new Date('2014-10-25T10:46:20Z');
+    const fmt = 'yyyy-MM-dd HH:mm:ss zzz';
+    expect(format(sample, fmt, { timeZone: 'America/New_York' })).toBe(
+      dateFnsTzFormat(sample, fmt, { timeZone: 'America/New_York' })
+    );
+  });
+
+  it('ignores options.timeZone for ZonedDateTime input - its own zone always wins', () => {
+    const zoned = toZonedDateTime(date, 'Asia/Tokyo');
+    const fmt = 'yyyy-MM-dd HH:mm:ss XXX';
+    expect(format(zoned, fmt, { timeZone: 'America/New_York' })).toBe(format(zoned, fmt));
+  });
+
   it('matches date-fns+UTCDate for PlainDateTime input', () => {
     const fmt = 'PPPPpppp';
     expect(format(toPlainDateTime(date), fmt)).toBe(dateFnsFormat(toUTCDate(date), fmt));
@@ -352,5 +380,35 @@ describe('format', () => {
 
   it('matches date-fns+UTCDate for PlainDate timezone tokens (always UTC/Z)', () => {
     expect(format(toPlainDate(date), 'XXX')).toBe(dateFnsFormat(toUTCDate(date), 'XXX'));
+  });
+
+  it('reuses the same parsed format string correctly across different dates and option sets', () => {
+    // The parsed token list for a given formatStr is cached internally (it never depends on date
+    // or options) - this guards against the cache leaking state between calls with the same
+    // formatStr but different dates/options.
+    const fmt = "yyyy-MM-dd'T'HH:mm:ss";
+    const first = format(date, fmt);
+    const second = format(morning, fmt, { locale: 'fr-FR' });
+    const third = format(date, fmt);
+    expect(first).toBe(dateFnsFormat(date, fmt));
+    expect(second).toBe(dateFnsFormat(morning, fmt));
+    expect(third).toBe(first);
+  });
+
+  it('evicts the oldest entries once the internal format-string cache exceeds its size cap, without breaking subsequent calls', () => {
+    // The cache is capped at 500 entries and evicts the oldest 20% (not cleared wholesale) once
+    // full - exercise that eviction branch directly by formatting with more than 500 distinct
+    // format strings (each made distinct via a differently-sized literal-text suffix), then
+    // confirm formatting still works correctly both for a fresh format string (cache miss after
+    // eviction) and for one of the earliest, now-likely-evicted strings (must still re-parse
+    // correctly, not return stale/wrong data).
+    for (let i = 0; i < 501; i++) {
+      format(date, `yyyy-MM-dd '${'-'.repeat(i)}'`);
+    }
+    const freshFmt = 'yyyy-MM-dd';
+    expect(format(date, freshFmt)).toBe(dateFnsFormat(date, freshFmt));
+
+    const earlyFmt = "yyyy-MM-dd '-'";
+    expect(format(date, earlyFmt)).toBe(dateFnsFormat(date, earlyFmt));
   });
 });

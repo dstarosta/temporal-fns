@@ -9,6 +9,7 @@ export type FixtureKind =
   | 'dateValues'
   | 'string'
   | 'timeZoneId'
+  | 'durationUnit'
   | 'number'
   | 'boolean'
   | 'options';
@@ -202,6 +203,36 @@ export const fpExhaustiveTable: FpExhaustiveCase[] = [
     ],
   },
   {
+    exportName: 'areIntervalsAdjacent',
+    directExportName: 'areIntervalsAdjacent',
+    onlyOptionsParam: false,
+    args: [
+      {
+        kind: 'interval',
+        typeText: 'Interval<Date>',
+      },
+      {
+        kind: 'interval',
+        typeText: 'Interval<Date>',
+      },
+    ],
+  },
+  {
+    exportName: 'areIntervalsEquivalent',
+    directExportName: 'areIntervalsEquivalent',
+    onlyOptionsParam: false,
+    args: [
+      {
+        kind: 'interval',
+        typeText: 'Interval<Date>',
+      },
+      {
+        kind: 'interval',
+        typeText: 'Interval<Date>',
+      },
+    ],
+  },
+  {
     exportName: 'areIntervalsOverlapping',
     directExportName: 'areIntervalsOverlapping',
     onlyOptionsParam: false,
@@ -318,6 +349,21 @@ export const fpExhaustiveTable: FpExhaustiveCase[] = [
       {
         kind: 'date',
         typeText: 'Date',
+      },
+    ],
+  },
+  {
+    exportName: 'countIntervalUnits',
+    directExportName: 'countIntervalUnits',
+    onlyOptionsParam: false,
+    args: [
+      {
+        kind: 'interval',
+        typeText: 'Interval<Date>',
+      },
+      {
+        kind: 'durationUnit',
+        typeText: 'keyof import("./format-duration.js").Duration',
       },
     ],
   },
@@ -1167,6 +1213,48 @@ export const fpExhaustiveTable: FpExhaustiveCase[] = [
     ],
   },
   {
+    exportName: 'formatInTimeZone',
+    directExportName: 'formatInTimeZone',
+    onlyOptionsParam: false,
+    args: [
+      {
+        kind: 'date',
+        typeText: 'Date | DateLike',
+      },
+      {
+        kind: 'timeZoneId',
+        typeText: 'string',
+      },
+      {
+        kind: 'string',
+        typeText: 'string',
+      },
+    ],
+  },
+  {
+    exportName: 'formatInTimeZoneWithOptions',
+    directExportName: 'formatInTimeZone',
+    onlyOptionsParam: false,
+    args: [
+      {
+        kind: 'date',
+        typeText: 'Date | DateLike',
+      },
+      {
+        kind: 'timeZoneId',
+        typeText: 'string',
+      },
+      {
+        kind: 'string',
+        typeText: 'string',
+      },
+      {
+        kind: 'options',
+        typeText: 'FormatOptions | undefined',
+      },
+    ],
+  },
+  {
     exportName: 'formatISO',
     directExportName: 'formatISO',
     onlyOptionsParam: false,
@@ -1353,6 +1441,21 @@ export const fpExhaustiveTable: FpExhaustiveCase[] = [
       {
         kind: 'timeZoneId',
         typeText: 'string | undefined',
+      },
+    ],
+  },
+  {
+    exportName: 'fromZonedTime',
+    directExportName: 'fromZonedTime',
+    onlyOptionsParam: false,
+    args: [
+      {
+        kind: 'date',
+        typeText: 'Date | DateLike',
+      },
+      {
+        kind: 'timeZoneId',
+        typeText: 'string',
       },
     ],
   },
@@ -1559,6 +1662,21 @@ export const fpExhaustiveTable: FpExhaustiveCase[] = [
     ],
   },
   {
+    exportName: 'getTimezoneOffset',
+    directExportName: 'getTimezoneOffset',
+    onlyOptionsParam: false,
+    args: [
+      {
+        kind: 'timeZoneId',
+        typeText: 'string',
+      },
+      {
+        kind: 'date',
+        typeText: 'Date | DateLike | undefined',
+      },
+    ],
+  },
+  {
     exportName: 'getUnixTime',
     directExportName: 'getUnixTime',
     onlyOptionsParam: false,
@@ -1714,6 +1832,21 @@ export const fpExhaustiveTable: FpExhaustiveCase[] = [
       {
         kind: 'number',
         typeText: 'number',
+      },
+    ],
+  },
+  {
+    exportName: 'intersectIntervals',
+    directExportName: 'intersectIntervals',
+    onlyOptionsParam: false,
+    args: [
+      {
+        kind: 'interval',
+        typeText: 'Interval<Date>',
+      },
+      {
+        kind: 'interval',
+        typeText: 'Interval<Date>',
       },
     ],
   },
@@ -1901,6 +2034,47 @@ export const fpExhaustiveTable: FpExhaustiveCase[] = [
       {
         kind: 'date',
         typeText: 'Date | DateLike',
+      },
+    ],
+  },
+  {
+    exportName: 'isIntervalEmpty',
+    directExportName: 'isIntervalEmpty',
+    onlyOptionsParam: false,
+    args: [
+      {
+        kind: 'interval',
+        typeText: 'Interval<Date>',
+      },
+    ],
+  },
+  {
+    exportName: 'isIntervalSubset',
+    directExportName: 'isIntervalSubset',
+    onlyOptionsParam: false,
+    args: [
+      {
+        kind: 'interval',
+        typeText: 'Interval<Date>',
+      },
+      {
+        kind: 'interval',
+        typeText: 'Interval<Date>',
+      },
+    ],
+  },
+  {
+    exportName: 'isIntervalSuperset',
+    directExportName: 'isIntervalSuperset',
+    onlyOptionsParam: false,
+    args: [
+      {
+        kind: 'interval',
+        typeText: 'Interval<Date>',
+      },
+      {
+        kind: 'interval',
+        typeText: 'Interval<Date>',
       },
     ],
   },
@@ -2359,8 +2533,8 @@ export const fpExhaustiveTable: FpExhaustiveCase[] = [
     onlyOptionsParam: false,
     args: [
       {
-        kind: 'date',
-        typeText: 'unknown',
+        kind: 'options',
+        typeText: 'DateLike',
       },
     ],
   },
@@ -3251,6 +3425,44 @@ export const fpExhaustiveTable: FpExhaustiveCase[] = [
     ],
   },
   {
+    exportName: 'sliceInterval',
+    directExportName: 'sliceInterval',
+    onlyOptionsParam: false,
+    args: [
+      {
+        kind: 'interval',
+        typeText: 'Interval<Date>',
+      },
+      {
+        kind: 'duration',
+        typeText: 'Duration',
+      },
+      {
+        kind: 'number',
+        typeText: 'number',
+      },
+      {
+        kind: 'number',
+        typeText: 'number | undefined',
+      },
+    ],
+  },
+  {
+    exportName: 'splitIntervalByDuration',
+    directExportName: 'splitIntervalByDuration',
+    onlyOptionsParam: false,
+    args: [
+      {
+        kind: 'interval',
+        typeText: 'Interval<Date>',
+      },
+      {
+        kind: 'duration',
+        typeText: 'Duration',
+      },
+    ],
+  },
+  {
     exportName: 'startOfDay',
     directExportName: 'startOfDay',
     onlyOptionsParam: false,
@@ -3626,6 +3838,21 @@ export const fpExhaustiveTable: FpExhaustiveCase[] = [
     ],
   },
   {
+    exportName: 'subtractInterval',
+    directExportName: 'subtractInterval',
+    onlyOptionsParam: false,
+    args: [
+      {
+        kind: 'interval',
+        typeText: 'Interval<Date>',
+      },
+      {
+        kind: 'interval',
+        typeText: 'Interval<Date>',
+      },
+    ],
+  },
+  {
     exportName: 'toDate',
     directExportName: 'toDate',
     onlyOptionsParam: false,
@@ -3674,6 +3901,21 @@ export const fpExhaustiveTable: FpExhaustiveCase[] = [
     ],
   },
   {
+    exportName: 'toZonedTime',
+    directExportName: 'toZonedTime',
+    onlyOptionsParam: false,
+    args: [
+      {
+        kind: 'date',
+        typeText: 'Date | DateLike',
+      },
+      {
+        kind: 'timeZoneId',
+        typeText: 'string',
+      },
+    ],
+  },
+  {
     exportName: 'todayZonedDateTime',
     directExportName: 'todayZonedDateTime',
     onlyOptionsParam: false,
@@ -3692,6 +3934,21 @@ export const fpExhaustiveTable: FpExhaustiveCase[] = [
       {
         kind: 'timeZoneId',
         typeText: 'string | undefined',
+      },
+    ],
+  },
+  {
+    exportName: 'unionIntervals',
+    directExportName: 'unionIntervals',
+    onlyOptionsParam: false,
+    args: [
+      {
+        kind: 'interval',
+        typeText: 'Interval<Date>',
+      },
+      {
+        kind: 'interval',
+        typeText: 'Interval<Date>',
       },
     ],
   },

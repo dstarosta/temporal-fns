@@ -1,0 +1,1 @@
+import{subtractInterval as e}from"../subtract-interval.js";import{convertToFP as t}from"./helpers/convert-to-fp.js";const n=t(e,2);export{n as subtractInterval};

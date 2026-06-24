@@ -1,0 +1,1 @@
+import{addValue as e}from"./add.js";import{compare as t}from"./helpers/compare.js";function n(e){return t(e.start,e.end)<=0?[e.start,e.end]:[e.end,e.start]}function r(r,i){let[a,o]=n(r);if(t(a,o)===0)return 0;let s={[i]:1},c=0,l=a;for(;t(l,o)<0;)l=e(l,s),c++;return c}export{r as countIntervalUnits};

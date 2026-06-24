@@ -1,0 +1,1 @@
+import{compare as e}from"./helpers/compare.js";function t(t){return e(t.start,t.end)<=0?[t.start,t.end]:[t.end,t.start]}function n(n,r){let[i,a]=t(n),[o,s]=t(r);return e(a,o)===0||e(s,i)===0}export{n as areIntervalsAdjacent};

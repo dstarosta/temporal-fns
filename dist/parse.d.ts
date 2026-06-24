@@ -1,3 +1,5 @@
+import { DateLike } from "./types.js";
+
 //#region src/parse.d.ts
 /**
  * The {@link parse} function options.
@@ -56,7 +58,7 @@ type ParseZonedDateTimeOptions = ParseTemporalOptions<Temporal.ZonedDateTime> & 
  * const result = parse('02/11/2014', 'MM/dd/yyyy', new Date())
  * //=> Tue Feb 11 2014 00:00:00
  */
-declare function parse(dateStr: string, formatStr: string, referenceDate: Date, options?: ParseOptions): Date;
+declare function parse(dateStr: string, formatStr: string, referenceDate: Date | DateLike, options?: ParseOptions): Date;
 /**
  * @summary Parse the date.
  *
@@ -81,7 +83,7 @@ declare function parse(dateStr: string, formatStr: string, referenceDate: Date, 
  *   same time
  * @throws `formatStr` contains a time-of-day token
  */
-declare function parse(dateStr: string, formatStr: string, referenceDate: Date, options: ParseTemporalOptions<Temporal.PlainDate>): Temporal.PlainDate | undefined;
+declare function parse(dateStr: string, formatStr: string, referenceDate: Date | DateLike, options: ParseTemporalOptions<Temporal.PlainDate>): Temporal.PlainDate | undefined;
 /**
  * @summary Parse the date.
  *
@@ -105,7 +107,7 @@ declare function parse(dateStr: string, formatStr: string, referenceDate: Date, 
  * @throws The format string mustn't contain two incompatible tokens (e.g. `HH` and `a`) at the
  *   same time
  */
-declare function parse(dateStr: string, formatStr: string, referenceDate: Date, options: ParseTemporalOptions<Temporal.PlainDateTime>): Temporal.PlainDateTime | undefined;
+declare function parse(dateStr: string, formatStr: string, referenceDate: Date | DateLike, options: ParseTemporalOptions<Temporal.PlainDateTime>): Temporal.PlainDateTime | undefined;
 /**
  * @summary Parse the date.
  *
@@ -131,7 +133,7 @@ declare function parse(dateStr: string, formatStr: string, referenceDate: Date, 
  * @throws The format string mustn't contain two incompatible tokens (e.g. `HH` and `a`) at the
  *   same time
  */
-declare function parse(dateStr: string, formatStr: string, referenceDate: Date, options: ParseZonedDateTimeOptions): Temporal.ZonedDateTime | undefined;
+declare function parse(dateStr: string, formatStr: string, referenceDate: Date | DateLike, options: ParseZonedDateTimeOptions): Temporal.ZonedDateTime | undefined;
 //#endregion
 export { ParseOptions, ParseTemporalOptions, ParseZonedDateTimeOptions, parse };
 //# sourceMappingURL=parse.d.ts.map

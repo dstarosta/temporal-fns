@@ -1,3 +1,4 @@
+import { getCachedDateTimeFormat } from './helpers/intl-cache.js';
 import { type DateLike } from './types.js';
 
 /**
@@ -67,7 +68,7 @@ export function intlFormat(
   }
 
   if (date instanceof Date) {
-    return new Intl.DateTimeFormat(locale, formatOptions).format(date);
+    return getCachedDateTimeFormat(locale, formatOptions ?? {}).format(date);
   }
   return date.toLocaleString(locale, formatOptions);
 }

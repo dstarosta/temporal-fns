@@ -6,6 +6,7 @@ import { differenceInCalendarYearsValue } from './difference-in-calendar-years.j
 import { differenceInHoursValue } from './difference-in-hours.js';
 import { differenceInMinutesValue } from './difference-in-minutes.js';
 import { differenceInSecondsValue } from './difference-in-seconds.js';
+import { getCachedRelativeTimeFormat } from './helpers/intl-cache.js';
 import { type DateLike } from './types.js';
 
 export type IntlFormatDistanceUnit =
@@ -337,6 +338,6 @@ export function intlFormatDistance(
     ? { unit: options.unit, value: valueForUnit(options.unit, laterDate, earlierDate) }
     : pickUnitAndValue(laterDate, earlierDate);
 
-  const rtf = new Intl.RelativeTimeFormat(options?.locale, { numeric: 'auto', ...options });
+  const rtf = getCachedRelativeTimeFormat(options?.locale, { numeric: 'auto', ...options });
   return rtf.format(value, unit);
 }

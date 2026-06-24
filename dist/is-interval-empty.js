@@ -1,0 +1,1 @@
+import{compare as e}from"./helpers/compare.js";function t(t){return e(t.start,t.end)===0}export{t as isIntervalEmpty};

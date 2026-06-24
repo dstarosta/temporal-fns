@@ -1,3 +1,4 @@
+import { getCachedDateTimeFormat } from './intl-cache.js';
 import { type DateLike } from '../types.js';
 
 // Intl.DateTimeFormat natively formats Date/PlainDate/PlainDateTime but rejects
@@ -34,7 +35,7 @@ export function formatToParts(
   // gap, not a runtime issue — formatToParts genuinely accepts
   // PlainDate/PlainDateTime/Instant per the Temporal proposal's Intl
   // integration, verified directly against V8).
-  return new Intl.DateTimeFormat(locale, { ...options, timeZone }).formatToParts(
+  return getCachedDateTimeFormat(locale, { ...options, timeZone }).formatToParts(
     value as unknown as Date
   );
 }

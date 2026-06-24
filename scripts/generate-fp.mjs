@@ -173,6 +173,20 @@ function resolveTypeImports(
   }
 }
 
+// `checker.typeToString` with `UseFullyQualifiedType` mostly prints alias names as-is (e.g.
+// `EachOfIntervalOptions`), letting `resolveTypeImports` handle the import separately by walking
+// the syntactic type node - but for a `keyof`/mapped/computed alias (e.g. `FormatDurationUnit =
+// keyof Duration`), it instead EXPANDS the alias inline as `keyof import("./format-duration.js")
+// .Duration`, embedding a dist-relative import path directly into the printed type text. That
+// path is never visited by `resolveTypeImports` (it's not a separate `TypeReferenceNode` - it's
+// baked into the string), so it stays relative to `dist/` (where the .d.ts files are siblings)
+// instead of being adjusted for `src/fp/`, one directory deeper. Since every generated fp file
+// lives at that fixed one-level-deeper location, the fix is a single mechanical rewrite: any
+// `import("./...")` substring becomes `import("../...")`.
+function rewriteInlineImportPaths(typeText) {
+  return typeText.replace(/import\("\.\//g, 'import("../');
+}
+
 // Returns { name, arity, hasOptions, paramTypeTexts, returnTypeText, importsNeeded } for the main
 // function export of `file`, or null if `file`'s dist .d.ts doesn't export a single
 // function/callable-const matching `name`. Types are read off the *first* overload (the plain,
@@ -235,11 +249,13 @@ function readSignature(program, checker, distDtsPath, exportName) {
     const paramTypeNode = declParams[index]?.type;
     const paramImports = resolveTypeImports(checker, paramTypeNode, sourceFile);
     paramImportsNeeded.push(paramImports);
-    return checker.typeToString(paramType, sourceFile, typeFlags);
+    return rewriteInlineImportPaths(checker.typeToString(paramType, sourceFile, typeFlags));
   });
   const returnType = checker.getReturnTypeOfSignature(firstSig);
   const returnImportsNeeded = resolveTypeImports(checker, declReturnTypeNode, sourceFile);
-  const returnTypeText = checker.typeToString(returnType, sourceFile, typeFlags);
+  const returnTypeText = rewriteInlineImportPaths(
+    checker.typeToString(returnType, sourceFile, typeFlags)
+  );
 
   return {
     name: exportName,

@@ -1,0 +1,1 @@
+import{toEpochMilliseconds as e}from"./helpers/to-epoch-milliseconds.js";function t(t,n=new Date){let r=e(n);return Temporal.Instant.fromEpochMilliseconds(r).toZonedDateTimeISO(t).offsetNanoseconds/1e6}export{t as getTimezoneOffset};

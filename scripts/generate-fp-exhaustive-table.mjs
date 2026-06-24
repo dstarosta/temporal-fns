@@ -106,6 +106,15 @@ function readSignature(program, checker, distDtsPath, exportName) {
 // whenever the underlying function happens to ALSO have a trailing options param that isn't part of
 // THIS export's sliced arg list.
 function classifyParamType(typeText, paramName) {
+  // `FormatDurationUnit = keyof Duration` (a derived/mapped type alias) gets printed by
+  // `checker.typeToString` as its fully-expanded form `keyof import("./format-duration.js")
+  // .Duration` rather than the alias name - this must be checked BEFORE the `Options` catch-all
+  // below, since it doesn't match any of the more specific patterns and would otherwise fall
+  // through to the generic 'options' (-> `{}` fixture) default, which silently no-ops
+  // `countIntervalUnits`'s internal `{ [unit]: 1 }` step construction and hangs its loop forever.
+  if (/^keyof import\(.*\)\.Duration$/.test(typeText)) {
+    return 'durationUnit';
+  }
   if (/Options(\s*\|\s*undefined)?$/.test(typeText) && !/^Date\b/.test(typeText)) {
     return 'options';
   }
@@ -125,7 +134,9 @@ function classifyParamType(typeText, paramName) {
     return 'dateValues';
   }
   if (
-    /^(Date \| DateLike|DateLike \| Date|Date \| TimeLike|TimeLike \| Date|Date)$/.test(typeText)
+    /^(Date \| DateLike|DateLike \| Date|Date \| TimeLike|TimeLike \| Date|Date)(\s*\|\s*undefined)?$/.test(
+      typeText
+    )
   ) {
     return 'date';
   }
@@ -139,10 +150,10 @@ function classifyParamType(typeText, paramName) {
     }
     return 'string';
   }
-  if (/^number$/.test(typeText)) {
+  if (/^number(\s*\|\s*undefined)?$/.test(typeText)) {
     return 'number';
   }
-  if (/^boolean$/.test(typeText)) {
+  if (/^boolean(\s*\|\s*undefined)?$/.test(typeText)) {
     return 'boolean';
   }
   if (/^unknown$/.test(typeText)) {
@@ -247,6 +258,7 @@ function main() {
     "  | 'dateValues'",
     "  | 'string'",
     "  | 'timeZoneId'",
+    "  | 'durationUnit'",
     "  | 'number'",
     "  | 'boolean'",
     "  | 'options';",

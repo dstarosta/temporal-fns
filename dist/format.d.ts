@@ -9,6 +9,13 @@ interface FormatOptions extends LocalWeekOptions {
   locale?: Intl.LocalesArgument;
   useAdditionalWeekYearTokens?: boolean;
   useAdditionalDayOfYearTokens?: boolean;
+  /**
+   * An IANA time zone identifier (e.g. `'America/New_York'`) the `x`/`X`/`O`/`z` tokens format
+   * against, instead of the system's own time zone. Only applies when `date` is a plain `Date` —
+   * a `Temporal.ZonedDateTime` already carries its own real time zone and ignores this option
+   * entirely. Mirrors `date-fns-tz`'s `format`'s `timeZone` option.
+   */
+  timeZone?: string;
 }
 /**
  * @summary Format the date.
@@ -232,8 +239,10 @@ interface FormatOptions extends LocalWeekOptions {
  *    except local week-numbering years are dependent on `options.weekStartsOn`
  *    and `options.firstWeekContainsDate`.
  *
- * 6. Specific non-location timezones are currently unavailable, so right now these tokens fall
- *    back to GMT timezones.
+ * 6. Specific non-location timezones (e.g. `EST`, `Eastern Standard Time`) are resolved via
+ *    `Intl.DateTimeFormat`, and only available when a real IANA time zone is known: either `date`
+ *    is a `Temporal.ZonedDateTime` (which always carries one), or `options.timeZone` is set for
+ *    plain `Date` input. Without either, these tokens fall back to the GMT-offset format.
  *
  * 7. These patterns are not in the Unicode Technical Standard #35:
  *    - `i`: ISO day of week

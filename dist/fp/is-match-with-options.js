@@ -1,1 +1,1 @@
-import"../parse.js";import{isMatch as e}from"../is-match.js";import{convertToFP as t}from"./helpers/convert-to-fp.js";const n=t(e,3);export{n as isMatchWithOptions};
+import{isMatch as e}from"../is-match.js";import{convertToFP as t}from"./helpers/convert-to-fp.js";const n=t(e,3);export{n as isMatchWithOptions};

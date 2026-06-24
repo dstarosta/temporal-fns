@@ -60,6 +60,9 @@ function fixtureForKind(kind: FixtureKind, position: number): unknown {
     case 'timeZoneId': {
       return 'America/New_York';
     }
+    case 'durationUnit': {
+      return 'days';
+    }
     case 'number': {
       return 3;
     }
@@ -87,11 +90,12 @@ function lookupFn(barrel: Record<string, AnyFn | undefined>, name: string): AnyF
   return fn;
 }
 
-// "Now"-based exports (their only param is an optional IANA timeZone id) call Temporal.Now
-// internally, so the fp call and the direct call - made microseconds apart - never produce
-// byte-identical Instants. These are compared via an epoch-millisecond tolerance instead of
-// toEqual, mirroring the existing precedent in tests/today-zoned-date-time.test.ts.
+// "Now"-based exports call Temporal.Now/Date.now() internally, so the fp call and the direct call
+// - made microseconds apart - never produce byte-identical results. These are compared via an
+// epoch-millisecond tolerance instead of toEqual, mirroring the existing precedent in
+// tests/today-zoned-date-time.test.ts.
 const nowBasedExports = new Set([
+  'constructNow',
   'endOfTodayZonedDateTime',
   'endOfTomorrowZonedDateTime',
   'endOfYesterdayZonedDateTime',
@@ -102,6 +106,18 @@ const nowBasedExports = new Set([
   'tomorrowZonedDateTime',
   'yesterdayZonedDateTime',
 ]);
+
+// Extracts a comparable epoch-millisecond value from any "now"-based result shape this table can
+// produce: Date (constructNow's Date branch) or Temporal.ZonedDateTime (every other entry above).
+function toComparableEpochMilliseconds(value: unknown): number {
+  if (value instanceof Date) {
+    return value.getTime();
+  }
+  if (value instanceof Temporal.ZonedDateTime) {
+    return value.epochMilliseconds;
+  }
+  throw new TypeError(`Unsupported now-based result type: ${String(value)}`);
+}
 
 describe('fp exhaustive coverage (generator-bug catcher)', () => {
   it('covers every generated export exactly once', () => {
@@ -170,10 +186,15 @@ describe('fp exhaustive coverage (generator-bug catcher)', () => {
       const directResult = directFn(...argValues);
 
       if (nowBasedExports.has(testCase.exportName)) {
-        const fpZoned = fpResult as Temporal.ZonedDateTime;
-        const directZoned = directResult as Temporal.ZonedDateTime;
-        expect(fpZoned.timeZoneId).toBe(directZoned.timeZoneId);
-        const diffMs = Math.abs(fpZoned.epochMilliseconds - directZoned.epochMilliseconds);
+        if (
+          fpResult instanceof Temporal.ZonedDateTime &&
+          directResult instanceof Temporal.ZonedDateTime
+        ) {
+          expect(fpResult.timeZoneId).toBe(directResult.timeZoneId);
+        }
+        const diffMs = Math.abs(
+          toComparableEpochMilliseconds(fpResult) - toComparableEpochMilliseconds(directResult)
+        );
         expect(diffMs).toBeLessThan(1000);
         return;
       }

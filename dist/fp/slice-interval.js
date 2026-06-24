@@ -1,0 +1,1 @@
+import{sliceInterval as e}from"../slice-interval.js";import{convertToFP as t}from"./helpers/convert-to-fp.js";const n=t(e,4);export{n as sliceInterval};

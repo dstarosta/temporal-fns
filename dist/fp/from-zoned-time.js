@@ -1,0 +1,1 @@
+import{fromZonedTime as e}from"../from-zoned-time.js";import{convertToFP as t}from"./helpers/convert-to-fp.js";const n=t(e,2);export{n as fromZonedTime};

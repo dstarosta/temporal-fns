@@ -1,0 +1,1 @@
+import{splitIntervalByDurationValue as e}from"./split-interval-by-duration.js";function t(t,n,r,i){let a=e(t,n),o=i===void 0?a.slice(r):a.slice(r,i),s=o[0],c=o.at(-1);return!s||!c?null:{start:s.start,end:c.end}}export{t as sliceInterval};

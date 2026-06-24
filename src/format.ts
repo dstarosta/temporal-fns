@@ -14,6 +14,13 @@ export interface FormatOptions extends LocalWeekOptions {
   locale?: Intl.LocalesArgument;
   useAdditionalWeekYearTokens?: boolean;
   useAdditionalDayOfYearTokens?: boolean;
+  /**
+   * An IANA time zone identifier (e.g. `'America/New_York'`) the `x`/`X`/`O`/`z` tokens format
+   * against, instead of the system's own time zone. Only applies when `date` is a plain `Date` —
+   * a `Temporal.ZonedDateTime` already carries its own real time zone and ignores this option
+   * entirely. Mirrors `date-fns-tz`'s `format`'s `timeZone` option.
+   */
+  timeZone?: string;
 }
 
 // This RegExp consists of three parts separated by `|`:
@@ -211,6 +218,50 @@ function tokenizeLongFormat(formatStr: string): string {
       return substring;
     })
     .join('');
+}
+
+// Parsing a format string into FormatPart[] only depends on formatStr itself (never on date or
+// options), and the same format string is typically reused across many calls (e.g. formatting a
+// list of dates with one shared pattern) - caching the parse avoids re-running both tokenizer
+// regexps on every call. Capped since real-world format strings come from a small, code-level set
+// of constants; unbounded growth would only happen from pathological dynamically-generated format
+// strings, which this cap protects against.
+//
+// Eviction removes the oldest 20% of entries (by insertion order, which Map iterates in) rather
+// than clearing everything: if a caller's actual working set sits right at/above the cap (e.g. a
+// multi-tenant app with one format string per tenant), a full clear would sawtooth - wiping every
+// entry, including ones still being reused, on every single call once the cache is full. Evicting
+// a rolling fraction instead means most of a steady-state working set survives across evictions.
+// This is an insertion-order approximation of LRU (it doesn't bump entries on read), not true LRU,
+// but is far cheaper and sufficient given the cap is a defensive measure, not a hot budget.
+const formatPartsCache = new Map<string, FormatPart[]>();
+const formatPartsCacheLimit = 500;
+const formatPartsCacheEvictFraction = 0.2;
+
+function parseFormatParts(formatStr: string): FormatPart[] {
+  const cached = formatPartsCache.get(formatStr);
+  if (cached) {
+    return cached;
+  }
+  const preprocessed = tokenizeLongFormat(formatStr);
+  const parts = tokenizeFormat(preprocessed);
+  if (formatPartsCache.size >= formatPartsCacheLimit) {
+    const evictCount = Math.ceil(formatPartsCacheLimit * formatPartsCacheEvictFraction);
+    const oldestKeys = formatPartsCache.keys();
+    for (let i = 0; i < evictCount; i++) {
+      const { value: oldestKey, done } = oldestKeys.next();
+      // evictCount is always < formatPartsCacheLimit, and this only runs once the cache has
+      // reached at least that many entries, so the iterator can never actually run out within
+      // this loop; this is an invariant check, not a real runtime possibility.
+      /* v8 ignore next 3 */
+      if (done) {
+        throw new Error('Unreachable: formatPartsCache eviction ran out of keys.');
+      }
+      formatPartsCache.delete(oldestKey);
+    }
+  }
+  formatPartsCache.set(formatStr, parts);
+  return parts;
 }
 
 function tokenizeFormat(formatStr: string): FormatPart[] {
@@ -466,8 +517,10 @@ function tokenizeFormat(formatStr: string): FormatPart[] {
  *    except local week-numbering years are dependent on `options.weekStartsOn`
  *    and `options.firstWeekContainsDate`.
  *
- * 6. Specific non-location timezones are currently unavailable, so right now these tokens fall
- *    back to GMT timezones.
+ * 6. Specific non-location timezones (e.g. `EST`, `Eastern Standard Time`) are resolved via
+ *    `Intl.DateTimeFormat`, and only available when a real IANA time zone is known: either `date`
+ *    is a `Temporal.ZonedDateTime` (which always carries one), or `options.timeZone` is set for
+ *    plain `Date` input. Without either, these tokens fall back to the GMT-offset format.
  *
  * 7. These patterns are not in the Unicode Technical Standard #35:
  *    - `i`: ISO day of week
@@ -517,10 +570,14 @@ export function format(date: Date | DateLike, formatStr: string, options?: Forma
     throw new RangeError('Invalid time value');
   }
 
-  const preprocessed = tokenizeLongFormat(formatStr);
-  const parts = tokenizeFormat(preprocessed);
+  const parts = parseFormatParts(formatStr);
 
-  const context: FormatterContext = { locale, weekStartsOn, firstWeekContainsDate };
+  const context: FormatterContext = {
+    locale,
+    weekStartsOn,
+    firstWeekContainsDate,
+    ...(options?.timeZone !== undefined && { timeZone: options.timeZone }),
+  };
 
   return parts
     .map((part) => {

@@ -1,0 +1,1 @@
+import{areIntervalsAdjacent as e}from"../are-intervals-adjacent.js";import{convertToFP as t}from"./helpers/convert-to-fp.js";const n=t(e,2);export{n as areIntervalsAdjacent};

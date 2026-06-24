@@ -1,0 +1,1 @@
+import{compare as e}from"./helpers/compare.js";function t(t){return e(t.start,t.end)<=0?[t.start,t.end]:[t.end,t.start]}function n(n,r){let[i,a]=t(n),[o,s]=t(r);return e(i,o)>=0&&e(a,s)<=0}function r(e,t){return n(e,t)}export{r as isIntervalSubset,n as isIntervalSubsetValue};

@@ -1,4 +1,5 @@
 import { addLeadingZeros, getDateTimeFields, getOffsetMinutes } from './format-fields.js';
+import { getCachedDateTimeFormat } from './intl-cache.js';
 import { getISOWeekValue, getISOWeekYearValue } from './iso-week.js';
 import { getWordPart } from './intl-words.js';
 import { getWeekValueResolved, getWeekYearValueResolved } from './local-week.js';
@@ -14,9 +15,50 @@ export interface FormatterContext {
   locale: Intl.LocalesArgument;
   weekStartsOn: number;
   firstWeekContainsDate: number;
+  timeZone?: string;
 }
 
 export type Formatter = (date: Date | DateLike, token: string, context: FormatterContext) => string;
+
+// `context.timeZone` only applies to plain `Date` input: a `Temporal.ZonedDateTime` already
+// carries its own real time zone, which always takes precedence (overriding it would silently
+// produce a wall-clock/offset mismatch against the rest of the formatted output, which still
+// reads the ZonedDateTime's own fields untouched).
+function getEffectiveOffsetMinutes(date: Date | DateLike, context: FormatterContext): number {
+  if (context.timeZone && date instanceof Date) {
+    const zoned = Temporal.Instant.fromEpochMilliseconds(date.getTime()).toZonedDateTimeISO(
+      context.timeZone
+    );
+    // Negated to match Date#getTimezoneOffset()'s sign convention (positive = west of UTC),
+    // exactly like getOffsetMinutes' own ZonedDateTime branch does.
+    return -zoned.offsetNanoseconds / 60_000_000_000;
+  }
+  return getOffsetMinutes(date);
+}
+
+// Real IANA specific-name lookup (e.g. "EST"/"Eastern Standard Time") for the z/zzzz tokens, via
+// Intl. `Temporal.ZonedDateTime` input goes through formatToParts (which already converts it to
+// an Instant + explicit timeZone internally - Intl.DateTimeFormat rejects a bare ZonedDateTime
+// argument outright). Plain `Date` input is formatted directly with `context.timeZone` as an
+// explicit override, since formatToParts has no override hook of its own for the Date case (it
+// only ever derives a timeZone from a ZonedDateTime argument).
+function getTimeZoneName(
+  date: Date | DateLike,
+  context: FormatterContext,
+  style: 'short' | 'long'
+): string {
+  if (date instanceof Date) {
+    const parts = getCachedDateTimeFormat(context.locale, {
+      timeZone: context.timeZone,
+      timeZoneName: style,
+    }).formatToParts(date);
+    // The requested timeZoneName part is always present: it's derived directly from the
+    // `timeZoneName` style option passed in, which always yields a 'timeZoneName' part.
+    /* v8 ignore next */
+    return parts.find((part) => part.type === 'timeZoneName')?.value ?? '';
+  }
+  return getWordPart(date, context.locale, { timeZoneName: style }, 'timeZoneName');
+}
 
 // en-US is the default/only built-in locale (per the project's
 // locale-aware-via-Intl design): word lookups go through Intl.DateTimeFormat
@@ -491,8 +533,8 @@ export const formatters: Record<string, Formatter> = {
     return addLeadingZeros(fractionalSeconds, token.length);
   },
 
-  X: (date, token) => {
-    const offsetMinutes = getOffsetMinutes(date);
+  X: (date, token, context) => {
+    const offsetMinutes = getEffectiveOffsetMinutes(date, context);
     if (offsetMinutes === 0) {
       return 'Z';
     }
@@ -505,8 +547,8 @@ export const formatters: Record<string, Formatter> = {
     return formatTimezone(offsetMinutes, ':');
   },
 
-  x: (date, token) => {
-    const offsetMinutes = getOffsetMinutes(date);
+  x: (date, token, context) => {
+    const offsetMinutes = getEffectiveOffsetMinutes(date, context);
     if (token === 'x') {
       return formatTimezoneWithOptionalMinutes(offsetMinutes);
     }
@@ -516,16 +558,24 @@ export const formatters: Record<string, Formatter> = {
     return formatTimezone(offsetMinutes, ':');
   },
 
-  O: (date, token) => {
-    const offsetMinutes = getOffsetMinutes(date);
+  O: (date, token, context) => {
+    const offsetMinutes = getEffectiveOffsetMinutes(date, context);
     if (token === 'O' || token === 'OO' || token === 'OOO') {
       return 'GMT' + formatTimezoneShort(offsetMinutes, ':');
     }
     return 'GMT' + formatTimezone(offsetMinutes, ':');
   },
 
-  z: (date, token) => {
-    const offsetMinutes = getOffsetMinutes(date);
+  z: (date, token, context) => {
+    // Real specific-name lookup only kicks in when a time zone is actually known: either the
+    // input is already a ZonedDateTime, or options.timeZone was supplied for a plain Date. With
+    // neither, there's no IANA zone to ask Intl about, so this falls back to the GMT-offset
+    // format, exactly like un-extended date-fns.
+    if (date instanceof Temporal.ZonedDateTime || context.timeZone) {
+      const style = token === 'zzzz' ? 'long' : 'short';
+      return getTimeZoneName(date, context, style);
+    }
+    const offsetMinutes = getEffectiveOffsetMinutes(date, context);
     if (token === 'z' || token === 'zz' || token === 'zzz') {
       return 'GMT' + formatTimezoneShort(offsetMinutes, ':');
     }

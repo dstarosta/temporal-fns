@@ -1,0 +1,1 @@
+import{compare as e}from"./helpers/compare.js";function t(t,n){let[r,i]=e(t.start,t.end)<=0?[t.start,t.end]:[t.end,t.start],[a,o]=e(n.start,n.end)<=0?[n.start,n.end]:[n.end,n.start];return e(r,a)===0&&e(i,o)===0}export{t as areIntervalsEquivalent};

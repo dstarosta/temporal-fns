@@ -1,0 +1,1 @@
+import{isIntervalSubsetValue as e}from"./is-interval-subset.js";function t(t,n){return e(n,t)}export{t as isIntervalSuperset};

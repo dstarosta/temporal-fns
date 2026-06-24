@@ -1,0 +1,1 @@
+import{getTimezoneOffset as e}from"../get-timezone-offset.js";import{convertToFP as t}from"./helpers/convert-to-fp.js";const n=t(e,2);export{n as getTimezoneOffset};

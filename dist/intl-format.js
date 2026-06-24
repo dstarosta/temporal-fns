@@ -1,1 +1,1 @@
-function e(e){return e!==void 0&&!(`locale`in e)}function t(t,n,r){let i,a;return e(n)?(i=n,a=r?.locale):a=n?.locale,t instanceof Date?new Intl.DateTimeFormat(a,i).format(t):t.toLocaleString(a,i)}export{t as intlFormat};
+import{getCachedDateTimeFormat as e}from"./helpers/intl-cache.js";function t(e){return e!==void 0&&!(`locale`in e)}function n(n,r,i){let a,o;return t(r)?(a=r,o=i?.locale):o=r?.locale,n instanceof Date?e(o,a??{}).format(n):n.toLocaleString(o,a)}export{n as intlFormat};
